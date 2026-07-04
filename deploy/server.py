@@ -390,6 +390,13 @@ class Handler(SimpleHTTPRequestHandler):
                 if path == "/api/stats":
                     self.send_json(sq.get_stats(conn))
                     return
+
+                if path == "/api/provenance":
+                    # In-band provenance chain (AC-17) — same data the worker
+                    # reads from the OPFS copy; served here for the api+idb
+                    # fallback provider (no-OPFS browsers).
+                    self.send_json(sq.get_provenance(conn))
+                    return
             finally:
                 conn.close()
 

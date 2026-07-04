@@ -118,3 +118,40 @@ def test_diff_tool_tolerates_provenance_table(tmp_path, capsys):
     assert rc == 0, out
     assert "column-exact match" in out
     assert "pre-provenance" in out  # the informational asymmetry note
+
+
+def test_read_helpers_tolerate_missing_table_and_agree(tmp_path):
+    """The two server-side readers (app/fellows_queries.get_provenance and
+    deploy/sqlite_api_support.get_provenance) return the same rows on a
+    provenance-carrying DB and both return [] on a pre-provenance DB —
+    the dev and prod tiers must not tell different provenance stories."""
+    import sqlite3
+    import sys
+    from pathlib import Path
+
+    repo_root = Path(__file__).resolve().parent.parent
+    deploy_dir = str(repo_root / "deploy")
+    if deploy_dir not in sys.path:
+        sys.path.insert(0, deploy_dir)
+    from app.fellows_queries import get_provenance as app_get
+    import sqlite_api_support as sq
+
+    src = _write_scrapefile(tmp_path)
+    with_table = _build(tmp_path, src, "with.db")
+    without_table = _build(tmp_path, src, "without.db")
+    conn = sqlite3.connect(without_table)
+    conn.execute("DROP TABLE provenance")
+    conn.commit()
+    conn.close()
+
+    c1 = sqlite3.connect(with_table)
+    c2 = sqlite3.connect(without_table)
+    try:
+        app_chain = app_get(c1)
+        assert len(app_chain) == 2 and app_chain[0]["hop"] == 0
+        assert app_chain == sq.get_provenance(c1)
+        assert app_get(c2) == []
+        assert sq.get_provenance(c2) == []
+    finally:
+        c1.close()
+        c2.close()

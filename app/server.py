@@ -54,6 +54,7 @@ from app.fellows_queries import (  # noqa: E402
     get_fellow_by_slug_or_id,
     search_fellows,
     get_stats,
+    get_provenance,
 )
 from app import fellows_queries as _fq  # noqa: E402
 DB_PATH = APP_DIR / "fellows.db"
@@ -509,6 +510,18 @@ class Handler(BaseHTTPRequestHandler):
             try:
                 stats = get_stats(conn)
                 self.send_json(stats)
+            finally:
+                conn.close()
+            return
+
+        # API: in-band provenance chain (AC-17). [] for a pre-provenance DB.
+        if path == "/api/provenance":
+            conn = get_db()
+            if not conn:
+                self.send_json([])
+                return
+            try:
+                self.send_json(get_provenance(conn))
             finally:
                 conn.close()
             return

@@ -1629,6 +1629,13 @@
           return r.ok ? r.json() : null;
         });
       },
+      // In-band provenance chain (AC-17). [] when the route or table is
+      // absent — provenance is additive, never load-bearing for boot.
+      getProvenance: function () {
+        return fetch('/api/provenance').then(function (r) {
+          return r.ok ? r.json() : [];
+        }).catch(function () { return []; });
+      },
 
       // ===== Groups (HTTP fallback) =================================
       // Same JSON shape as the SQLite path. Resolves member names via
@@ -4156,6 +4163,12 @@
       getStats: function () {
         return rpc.call('getStats');
       },
+      // In-band provenance chain (AC-17). A stale worker (SW update race)
+      // rejects with 'unknown op' — coerce to [] so the caller's fallback
+      // rendering applies; provenance is additive, never load-bearing.
+      getProvenance: function () {
+        return rpc.call('getProvenance').catch(function () { return []; });
+      },
       // ----- Groups + settings (relationships.db) — mutating ops gated.
       listGroups: function () {
         return rpc.call('listGroups');
@@ -4309,6 +4322,7 @@
       getOne: apiProvider.getOne.bind(apiProvider),
       search: apiProvider.search.bind(apiProvider),
       getStats: apiProvider.getStats.bind(apiProvider),
+      getProvenance: apiProvider.getProvenance.bind(apiProvider),
       // Everything relationships-shaped rejects with localDataUnavailable
       // so the unsupported-browser panel renders.
       listGroups: apiProvider.listGroups.bind(apiProvider),
@@ -7106,6 +7120,10 @@
     // actually working for me?" without sending them into the
     // diagnostics panel.
     aboutHtml += '<p class="about-last-update" id="about-last-update"></p>';
+    // Where the directory data ultimately came from — rendered from the
+    // in-band provenance chain stamped into fellows.db (AC-17), so the
+    // answer survives however the DB reached this device.
+    aboutHtml += '<p class="about-provenance" id="about-provenance"></p>';
     aboutHtml += '</div>';
 
     aboutHtml += '<h2 class="stats-title">Fellowship Statistics</h2>';
@@ -7139,6 +7157,30 @@
           el.textContent = 'Last update check: ' + meta.fetched_at + ' — succeeded.';
         }
       }).catch(function () { /* non-fatal — leave line empty */ });
+    })();
+
+    // Populate the "Data source" line from the in-band provenance chain
+    // (hop 0 = ultimate source). Async + non-blocking. A pre-provenance
+    // fellows.db (or a stale worker without the RPC) yields [] — fall back
+    // to the static source line without claiming an archive date we can't
+    // read from the data itself.
+    (function renderProvenanceLine() {
+      var el = document.getElementById('about-provenance');
+      if (!el) return;
+      var fallback = 'Data source: EHF Fellows Directory (Knack).';
+      if (!dataProvider || typeof dataProvider.getProvenance !== 'function') {
+        el.textContent = fallback;
+        return;
+      }
+      Promise.resolve(dataProvider.getProvenance()).then(function (chain) {
+        var hop0 = chain && chain.length ? chain[0] : null;
+        if (!hop0 || !hop0.system) {
+          el.textContent = fallback;
+          return;
+        }
+        el.textContent = 'Data source: ' + hop0.system +
+          (hop0.acquired_at ? ', archived ' + hop0.acquired_at : '') + '.';
+      }).catch(function () { el.textContent = fallback; });
     })();
 
     // Wire the two check buttons. Each is a one-shot per page load:
@@ -8820,6 +8862,29 @@
       .catch(function () { return null; });
   }
 
+  /** One-line provenance footer for export artifacts, derived from the
+   *  in-band chain in fellows.db (hop 0 = ultimate source). Resolves to a
+   *  string or null (pre-provenance DB / no provider method) — null means
+   *  the export emits no footer rather than claiming a source it can't
+   *  read from the data. Memoized: the chain is immutable per session. */
+  var _provenanceFooterPromise = null;
+  function fetchProvenanceFooterLine() {
+    if (_provenanceFooterPromise) return _provenanceFooterPromise;
+    if (!dataProvider || typeof dataProvider.getProvenance !== 'function') {
+      return Promise.resolve(null);
+    }
+    _provenanceFooterPromise = Promise.resolve(dataProvider.getProvenance())
+      .then(function (chain) {
+        var hop0 = chain && chain.length ? chain[0] : null;
+        if (!hop0 || !hop0.system) return null;
+        return 'Data source: ' + hop0.system +
+          (hop0.acquired_at ? ', archived ' + hop0.acquired_at : '') +
+          ' · exported from the EHF Fellows Local Directory';
+      })
+      .catch(function () { return null; });
+    return _provenanceFooterPromise;
+  }
+
   /** Build a Blob containing a single self-contained HTML file:
    *  inline <style>, the index portrait grid, then per-fellow cards as
    *  anchored sections (#fellow-<slug>). Portraits are inlined as data:
@@ -8836,6 +8901,7 @@
           return { slug: m.slug, url: 'data:' + mime + ';base64,' + bytesToBase64(res.bytes) };
         });
       });
+    var footerJob = fetchProvenanceFooterLine();
     return Promise.all(imageJobs).then(function (results) {
       var imgMap = {};
       results.forEach(function (r) { if (r) imgMap[r.slug] = r.url; });
@@ -8867,8 +8933,13 @@
       members.forEach(function (m) {
         html += buildExportFellowSection(group, m, imgMap);
       });
-      html += '</body></html>\n';
-      return new Blob([html], { type: 'text/html;charset=utf-8' });
+      return footerJob.then(function (footerLine) {
+        if (footerLine) {
+          html += '<p class="meta provenance-footer">' + escapeHtml(footerLine) + '</p>';
+        }
+        html += '</body></html>\n';
+        return new Blob([html], { type: 'text/html;charset=utf-8' });
+      });
     });
   }
 
@@ -8905,7 +8976,9 @@
         return { member: m, image: res };
       });
     });
-    return Promise.all(imageJobs).then(function (resolved) {
+    return Promise.all([Promise.all(imageJobs), fetchProvenanceFooterLine()]).then(function (all) {
+      var resolved = all[0];
+      var footerLine = all[1];
       // Grid: 4 columns, ~120pt cells.
       var cols = 4;
       var cellW = (pageW - marginX * 2) / cols;
@@ -8977,6 +9050,15 @@
           x += cellW;
         }
       });
+      if (footerLine) {
+        // Provenance footer on the last page, small and muted. Null (a
+        // pre-provenance DB) emits nothing rather than an unread claim.
+        doc.setFont('helvetica', 'italic');
+        doc.setFontSize(7);
+        doc.setTextColor(136);
+        doc.text(footerLine, marginX, pageH - 18);
+        doc.setTextColor(34);
+      }
       var blob = doc.output('blob');
       return blob;
     });
