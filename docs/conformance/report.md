@@ -4,7 +4,7 @@
 >
 > _Why it matters: PNA conformance is the spec's proxy for **safe to install** — a local-first app with no remote authority over your data._
 
-## 🟡 Conditionally conformant to the PNA Spec (PNT 0.1 (draft))
+## 🟡 Conditionally conformant to the PNA Spec (PNT 0.2)
 
 Every conformance claim this app makes is backed by live, executable evidence, and all deferrals are disciplined. This is the **deterministic** layer of conformance — a full determination also needs the spec's evaluate flow (below).
 
@@ -16,11 +16,11 @@ Every conformance claim this app makes is backed by live, executable evidence, a
 
 → To complete the determination (🟡 → 🟢), run the spec's audit flow: **[PNT User's Guide → Audit a candidate PNA](https://github.com/richbodo/personal_network_toolkit/blob/main/docs/users-guide.md#goal-2--audit-a-candidate-pna-before-installing-it)**.
 
-_Generated 2026-06-11T07:10:14Z for `3e35770`. Source of truth: [`docs/Architecture.md`](../Architecture.md)._
+_Generated 2026-07-04T11:44:51Z for `fede3fc`. Source of truth: [`docs/Architecture.md`](../Architecture.md)._
 
 **What the IDs mean** — [**AC**](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md) Architectural Commitment (a rule every safe PNA honors) · [**CST**](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md) Constraint (a platform limit handled honestly, not hidden) · [**EX**](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/exceptions.md) Exception (a declared departure from PNA rules).
 
-- **Conformant rows:** 35 of 39
+- **Conformant rows:** 37 of 41
 - **Deferrals:** 0 of 3 max ✅
 - **Findings:** 0 ✅
 
@@ -34,33 +34,35 @@ _None. Every `conformant` row cites live, non-deferred evidence; every deferral 
 
 ## Attestation rows
 
-Each row's ID links to its definition in the PNT spec. Status is summarized; the full realization + verification prose lives in [`docs/Architecture.md`](../Architecture.md).
+Each row's ID links to its definition in the PNT spec. Status is summarized; each row's realization prose is expandable in the [appendix below](#how-each-row-is-realized), and the source of truth stays [`docs/Architecture.md`](../Architecture.md).
 
 | Row | Status | Evidence (cited test → static state) |
 |---|---|---|
-| [AC-1 (two-store ownership split)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-1) | conformant | `tests/test_relationships.py::test_attach_fellows_readonly_allows_select` → live; `tests/test_database.py` → live |
+| [AC-1 (two-store ownership split)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-1) | conformant | `tests/test_relationships.py::test_attach_fellows_readonly_allows_select` → live; `tests/test_relationships.py::test_attach_fellows_readonly_denies_write` → live; `tests/test_database.py` → live |
 | [AC-4 (versioned cross-boundary handshake)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-4) | conformant | `tests/e2e/test_version_handshake.py::test_version_skew_refuses_mutations_but_allows_reads` → live; `tests/e2e/test_worker_rpc.py` → live |
 | [AC-6 (always-reachable diagnostic escape)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-6) | conformant | `tests/e2e/test_email_gate.py` → live; `tests/e2e/test_reset_everything.py` → live; `tests/e2e/test_clear_app_cache.py` → live |
 | [AC-7 (self-service field-debug substrate)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-7) | conformant | `tests/e2e/test_diagnostics_panel.py` → live; `test_boot_watchdog.py` → live; `test_boot_error_panel.py` → live; `test_bug_report.py` → live; `test_boot_beacon.py` → live |
-| [AC-9 (auto-backup of private data)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-9) | conformant | `tests/e2e/test_user_folder_storage.py::test_snapshot_lands_in_folder_when_folder_mode_active` → live; `tests/e2e/test_settings.py` → live |
-| [AC-10 (opt-in non-destructive re-imports)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-10) | conformant | `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel` → live; `test_orphan_soft_scan.py` → live; `test_versioned_fellows_db.py` → live |
+| [AC-9 (auto-backup of private data)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-9) | conformant | `tests/e2e/test_user_folder_storage.py::test_snapshot_lands_in_folder_when_folder_mode_active` → live; `tests/e2e/test_user_folder_storage.py::test_opfs_to_folder_backup_migration_on_folder_boot` → live; `tests/e2e/test_settings.py` → live |
+| [AC-10 (opt-in non-destructive re-imports)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-10) | conformant | `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel` → live; `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap` → live; `test_orphan_soft_scan.py` → live; `test_versioned_fellows_db.py` → live |
 | [AC-11 (concurrent-access detection)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-11) | conformant | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock` → live; `test_worker_spawn_failure.py` → live |
 | [AC-15 (build label tied to source revision)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-15) | conformant | `tests/test_build_pwa.py` → live; `tests/e2e/test_update_check.py` → live; `test_bug_report.py` → live; `test_boot_beacon.py` → live |
 | [AC-16 (user-driven transport selection)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-16) | partial-conformance | `tests/e2e/test_groups_export.py` → live; `tests/test_comms.py` → live |
 | [AC-17 (mirrored data is sourced)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-17) | conformant | `tests/test_database.py` → live; `build/diff_fellows_db.py` → live |
+| [AC-22 (honest capability assessment)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-22) | conformant | `tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider` → live; `tests/e2e/test_worker_cold_start.py` → live |
+| [AC-23 (source available for verification)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-23) | conformant | `tests/test_build_pwa.py` → live; `tests/e2e/test_update_check.py` → live |
 | [AC-18 (transports cannot read message contents)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-18) | conformant | `tests/test_comms.py` → live; `tests/test_private_data_ops.py` → live |
 | [AC-19 (user-visible payload before send)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-19) | conformant | `tests/e2e/test_groups_export.py` → live; `tests/e2e/test_groups_compose.py` → live |
 | [AC-PRM-A (LLM calls over user data are transports)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-prm-a) | partial-conformance | `tests/e2e/test_pna_exception_mode.py` → live; `test_mcpb_settings.py` → live |
 | [AC-PRM-D (re-ingestion is user-initiated)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-prm-d) | conformant | `tests/e2e/test_directory_data_update_flow.py` → live; `test_versioned_fellows_db.py::test_install_only_does_not_refetch_on_sha_mismatch` → live |
 | [AC-MCP-A (cloud AI clients require consent for Private DB)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-mcp-a) | partial-conformance | `tests/e2e/test_pna_exception_mode.py` → live; `tests/test_private_data_ops.py` → live |
-| [AC-MCP-B (MCP Communications stages; workspace launches)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-mcp-b) | conformant | `tests/test_comms.py::test_stage_email_basic_to` → live |
+| [AC-MCP-B (MCP Communications stages; workspace launches)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-mcp-b) | conformant | `tests/test_comms.py::test_stage_email_basic_to` → live; `tests/test_comms.py::test_stage_email_bcc_group_send` → live |
 | [AC-2 (no SaaS surface)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-2) | conformant | `tests/test_deploy_auth_round_trip.py::test_directory_api_is_403_without_session` → live; `test_deploy_sqlite_api.py` → live; `test_deploy_mcpb_routes.py` → live |
-| [AC-3 (single OPFS owner)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-3) | conformant | `tests/e2e/test_worker_rpc.py` → live; `test_worker_cold_start.py` → live; `test_local_first_boot.py` → live |
-| [AC-5 (stale session never locks users out of cache)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-5) | conformant | `tests/e2e/test_offline_only_mode.py::test_401_with_cached_data_shows_directory_from_cache` → live; `test_search_offline_fallback.py` → live; `test_local_first_boot.py` → live |
+| [RZ-1 (single OPFS owner)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#rz-1) | conformant | `tests/e2e/test_worker_rpc.py` → live; `test_worker_cold_start.py` → live; `test_local_first_boot.py` → live |
+| [AC-5 (stale session never locks users out of cache)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-5) | conformant | `tests/e2e/test_offline_only_mode.py::test_401_with_cached_data_shows_directory_from_cache` → live; `tests/e2e/test_offline_only_mode.py::test_onboarded_multitab_stale_session_shows_cached_directory_not_gate` → live; `tests/e2e/test_offline_only_mode.py::test_ownership_conflict_empty_cache_shows_panel_not_gate` → live; `test_search_offline_fallback.py` → live; `test_local_first_boot.py` → live |
 | [AC-8 (anti-enumeration + abuse-bounded analytics)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-8) | conformant | `tests/test_magic_link_auth.py` → live; `test_deploy_auth_round_trip.py` → live; `test_deploy_client_errors.py` → live; `test_client_error_sanitizer.py` → live |
-| [AC-12 (capability detection inside worker)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-12) | conformant | `tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider` → live; `test_worker_cold_start.py` → live |
-| [AC-13 (COOP/COEP required)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-13) | conformant | `tests/test_api.py::TestSecurityHeaders` → live |
-| [AC-14 (SW never owns SQLite)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#ac-14) | conformant | `tests/e2e/test_sw_post_caching.py` → live; `test_image_cache_no_bust.py` → live |
+| [RZ-2 (capability detection inside worker)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#rz-2) | conformant | `tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider` → live; `test_worker_cold_start.py` → live |
+| [RZ-3 (COOP/COEP required)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#rz-3) | conformant | `tests/test_api.py::TestSecurityHeaders` → live; `tests/test_api.py::TestSecurityHeaders` → live; `tests/test_api.py::TestSecurityHeaders` → live |
+| [RZ-4 (SW never owns SQLite)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#rz-4) | conformant | `tests/e2e/test_sw_post_caching.py` → live; `test_image_cache_no_bust.py` → live |
 | [EX-CLOUD-LLM](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/exceptions.md#ex-cloud-llm) | conformant | `tests/e2e/test_pna_exception_mode.py` → live; `tests/e2e/test_mcpb_settings.py` → live; `tests/test_private_data_ops.py::test_instructions_carry_cloud_llm_propagation_notice` → live; `tests/test_shared_data_ops.py::test_instructions_carry_cloud_llm_propagation_notice` → live |
 | [CST-PWA-PRIVATE-SNAPSHOT](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md#cst-pwa-private-snapshot) | conformant | `tests/e2e/test_browse_only_durability.py::test_gate_defaults_to_browse_only_without_folder` → live; `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_create_group` → live; `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only` → live; `tests/e2e/test_private_data_enforcement.py::test_folder_attached_allows_create_group` → live; `tests/e2e/test_private_data_enforcement.py::test_permission_lapse_reduces_capability_then_reconnect_restores` → live; `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes` → live; `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` → live; `tests/e2e/test_private_data_enforcement.py::test_private_db_export_round_trips` → live |
 | [CST-PWA-SANDBOX-SEALED](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md#cst-pwa-sandbox-sealed) | conformant | `tests/e2e/test_sandbox_sealed_mcp.py::test_no_folder_resident_private_store_off_folder` → live; `tests/e2e/test_sandbox_sealed_mcp.py::test_mcp_setup_warns_no_folder_off_folder` → live; `tests/e2e/test_sandbox_sealed_mcp.py::test_mcp_folder_warning_hidden_when_folder_attached` → live |
@@ -69,12 +71,215 @@ Each row's ID links to its definition in the PNT spec. Status is summarized; the
 | [CST-PWA-SINGLE-OWNER](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md#cst-pwa-single-owner) | conformant | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock` → live |
 | [CST-PWA-NO-BACKGROUND](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md#cst-pwa-no-background) | conformant | `tests/e2e/test_user_folder_storage.py` → live |
 | [CST-PWA-SERVER-FLOOR](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md#cst-pwa-server-floor) | conformant | _declared review kind_ |
-| UM-1 (no bypass) | conformant | `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` → live |
-| UM-2 (separation) | conformant | `tests/test_private_data_ops.py::test_read_only_enforcement` → live; `tests/test_comms.py::test_stage_email_basic_to` → live |
+| UM-1 (no bypass) | conformant | `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` → live; `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only` → live; `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes` → live |
+| UM-2 (separation) | conformant | `tests/test_private_data_ops.py::test_read_only_enforcement` → live; `tests/test_comms.py::test_stage_email_basic_to` → live; `tests/test_comms.py::test_stage_email_bcc_group_send` → live |
 | UM-3 (legibility) | conformant | `tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file` → live; `tests/e2e/test_groups_compose.py` → live; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index` → live |
-| Create / edit group, `group_members` add/remove | conformant | `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` → live |
-| `mailto:` compose / send | conformant | `tests/test_comms.py::test_stage_email_basic_to` → live; `tests/e2e/test_groups_compose.py` → live |
+| Create / edit group, `group_members` add/remove | conformant | `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` → live; `tests/e2e/test_private_data_enforcement.py::test_folder_attached_allows_create_group` → live; `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only` → live |
+| `mailto:` compose / send | conformant | `tests/test_comms.py::test_stage_email_basic_to` → live; `tests/test_comms.py::test_stage_email_bcc_group_send` → live; `tests/e2e/test_groups_compose.py` → live |
 | Group export (HTML / PDF) | conformant | `tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file` → live; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index` → live |
-| Directory re-import (shared mirror; touches private FKs) | conformant | `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel` → live |
+| Directory re-import (shared mirror; touches private FKs) | conformant | `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel` → live; `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap` → live |
 | Private-data **restore** (`importRelationshipsBytes`) | partial-conformance | `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes` → live |
+
+## How each row is realized
+
+Each row's **Realization** cell from `docs/Architecture.md`, verbatim — how the code meets the commitment (for CST rows: how the platform ceiling is handled). Relative links resolve from `docs/`.
+
+<details>
+<summary><b>AC-1 (two-store ownership split)</b> — conformant</summary>
+
+Two SQLite DBs: `fellows.db` (read-only contact data) + `relationships.db` (read-write, user-owned), separate OPFS files. `app/relationships.py:open_db()` ATTACHes fellows as `f` with `?mode=ro`; the worker owns the pair.
+
+</details>
+<details>
+<summary><b>AC-4 (versioned cross-boundary handshake)</b> — conformant</summary>
+
+`WORKER_RPC_VERSION`/`RELATIONSHIPS_SCHEMA_VERSION` in `vendor/sqlite-worker.js`; `EXPECTED_WORKER_RPC_VERSION` in `app.js`; `refuseIfVersionSkew()` gates mutating RPCs on mismatch, reads still pass; build label is not the gate.
+
+</details>
+<details>
+<summary><b>AC-6 (always-reachable diagnostic escape)</b> — conformant</summary>
+
+`?gate=1` forces the email gate regardless of stuck state (`app/static/app.js:startBrowserUx`); Reset Everything (`app/static/app.js:clearEverything`) + Clear App Cache `POST /api/logout` and reload.
+
+</details>
+<details>
+<summary><b>AC-7 (self-service field-debug substrate)</b> — conformant</summary>
+
+Build label (AC-15), `?diag=1` state-dump, sanitized error capture (`deploy/client_error_sanitizer.py`), bug-report flow, `?gate=1` escape, boot watchdog with named phase marks, slow-boot persistence.
+
+</details>
+<details>
+<summary><b>AC-9 (auto-backup of private data)</b> — conformant</summary>
+
+`vendor/sqlite-worker.js:maybeBackupRelationshipsDb()` — per-boot debounced (`BACKUP_DEBOUNCE_MS`), 5-slot rotation ring; folder mode writes the ring into the user folder.
+
+</details>
+<details>
+<summary><b>AC-10 (opt-in non-destructive re-imports)</b> — conformant</summary>
+
+About-page *Update directory data*; `app/static/vendor/sqlite-worker.js:previewFellowsDbSwap()`/`applyFellowsDbSwap()` preview `group_members` orphaned by the swap before commit; one-shot soft scan.
+
+</details>
+<details>
+<summary><b>AC-11 (concurrent-access detection)</b> — conformant</summary>
+
+Worker `app/static/vendor/sqlite-worker.js:isOwnershipConflictError()` → `OWNERSHIP_CONFLICT` with a specific "another tab/window of this app is already open" message; Web Lock `fellows-relationships-folder-write` guards folder writes.
+
+</details>
+<details>
+<summary><b>AC-15 (build label tied to source revision)</b> — conformant</summary>
+
+`build/build_pwa.py:compute_build_label()` → `<YYYY-MM-DD>-<short-sha>`, stamped into `app.js`/`sw.js`/`vendor/sqlite-worker.js` at build time; `app/server.py` substitutes the same at serve time.
+
+</details>
+<details>
+<summary><b>AC-16 (user-driven transport selection)</b> — partial-conformance</summary>
+
+Group/fellow export surfaces `mailto:` (+ `tel:`) (`app/static/app.js:renderGroupDetailPage`, `app/static/app.js:renderDetail`); the user picks per outreach; no transport is hardcoded as the sole option. Axis pick is `comms-transport-set: mailto-only` (Signal planned).
+
+</details>
+<details>
+<summary><b>AC-17 (mirrored data is sourced)</b> — conformant</summary>
+
+Canonical source: the **2026-04-08 Knack REST-API extraction of the EHF fellows directory** (515 records), archived before EHF's Knack SaaS shut down — all contact data derives from that one extraction. `build/restore_from_knack_scrapefile.py` maps every column to a Knack `field_*` (raw_dump fallback); no contact data introduced beyond the configured Knack source. Column-by-column mapping and recovery paths: [`./data_provenance.md`](./data_provenance.md).
+
+</details>
+<details>
+<summary><b>AC-22 (honest capability assessment)</b> — conformant</summary>
+
+The worker establishes OPFS durability by **probing the substrate, not a UA/feature string**: it attempts `installOpfsSAHPoolVfs()` and reports the real result as `opfsCapable` in the `init` handshake (`app/static/vendor/sqlite-worker.js:handlers.init`); the main thread reads that field and falls back to the `api+idb` provider, rendering the unsupported-browser panel (`app/static/app.js:renderLocalDataUnavailablePanel`) instead of UA-sniffing — UA parsing informs only the human-readable "which browser version" hint, never the capability gate. Honest *undetermined*: the update-check returns `status:'unsupported'` when it cannot compare; `?diag` reports each store's real presence/version. Realized via **RZ-2** (the RZ-2 realization, below).
+
+</details>
+<details>
+<summary><b>AC-23 (source available for verification)</b> — conformant</summary>
+
+The `web-bundle-with-magic-link` flavor meets the **baseline** form — source published alongside the served artifact: the AC-15 build label `<YYYY-MM-DD>-<short-sha>` (`build/build_pwa.py:compute_build_label()`, substituted at build *and* serve time from `git HEAD`) names the exact source revision, and that revision **is** this public, GPL-3.0-licensed repo (`LICENSE`), so the running bundle can be mapped to source and inspected/rebuilt before it is trusted. Not the strong build-from-verifiable-source form (the user is not required to rebuild before first use — that is PRM's demonstrator); no opaque artifact.
+
+</details>
+<details>
+<summary><b>AC-18 (transports cannot read message contents)</b> — conformant</summary>
+
+Only `mailto:` / `tel:` offered — no centralized SaaS message broker (Slack/Discord). `mailto:` hands to the user's client; MCP comms only stages a `mailto:` URL (`mcp_servers/comms.py:stage_email()`).
+
+</details>
+<details>
+<summary><b>AC-19 (user-visible payload before send)</b> — conformant</summary>
+
+Group export panel (`app/static/app.js:renderGroupDetailPage`) shows recipients + subject + body + merged data before launch, editable/cancelable; bulk shows recipient count + warning.
+
+</details>
+<details>
+<summary><b>AC-PRM-A (LLM calls over user data are transports)</b> — partial-conformance</summary>
+
+Cloud-LLM use is opt-in via the `EX-CLOUD-LLM` exception (consent gate `app/static/app.js:recordMcpbConsent()` → non-PNA mode); a local model is the default green path. Per-call prompt + merged-data visibility lives in the cloud client's own UI (the user drives Claude Desktop).
+
+</details>
+<details>
+<summary><b>AC-PRM-D (re-ingestion is user-initiated)</b> — conformant</summary>
+
+Directory-data refresh is an explicit About-page button only (`app/static/app.js:handleUpdateDirectoryDataClick`); boot is install-only and never background-polls.
+
+</details>
+<details>
+<summary><b>AC-MCP-A (cloud AI clients require consent for Private DB)</b> — partial-conformance</summary>
+
+Realized as the `EX-CLOUD-LLM` exception: a workspace consent gate before the user wires up a cloud client + a persistent non-PNA-mode signal; `mcp_servers/private_data_ops.py` opens both DBs `mode=ro`. The stdio servers are not per-call gated by design (out-of-band from the workspace — see [`../plans/pna_toolkit_exceptions_contribution.md`](../plans/pna_toolkit_exceptions_contribution.md) open question).
+
+</details>
+<details>
+<summary><b>AC-MCP-B (MCP Communications stages; workspace launches)</b> — conformant</summary>
+
+`mcp_servers/comms.py:stage_email()` returns a `mailto:` URL + payload preview and never fires a transport; the user's mail client launches it.
+
+</details>
+<details>
+<summary><b>AC-2 (no SaaS surface)</b> — conformant</summary>
+
+`deploy/server.py` ships no per-user RW endpoints; the dev server's retired `/api/groups` and `/api/settings` were the only ones that ever existed (Phase 1 cutover).
+
+</details>
+<details>
+<summary><b>RZ-1 (single OPFS owner)</b> — conformant</summary>
+
+`app/static/vendor/sqlite-worker.js` is the sole context that calls `navigator.storage.getDirectory` or opens a `FileSystemSyncAccessHandle`. Durable SQL in a browser *forces* this worker-owned, cross-origin-isolated, single-connection architecture — a property of the medium accepted as the substrate's cost, not a defect. (PNT folded the former `CST-PWA-DURABLE-SQL-ARCH` constraint directly into RZ-1; the worker-owned-OPFS convention is the handling.)
+
+</details>
+<details>
+<summary><b>AC-5 (stale session never locks users out of cache)</b> — conformant</summary>
+
+Three-tier `window.__dataProvider` (`app/static/app.js:bootDirectoryAsApp`) hot-swaps `worker` → `api+idb` on 401/403 mid-boot; the cached directory stays readable. The tier-3 IndexedDB mirror is now persisted on **worker**-source boots too (not just api), so a worker-only install has a real fallback when the worker can't own OPFS (multi-tab conflict) *and* the session is stale — previously that compound case fell through to the email gate. When even tier 3 is empty, a multi-tab ownership conflict surfaces the actionable "app open in another window" panel, never the gate (re-auth can't release the OPFS lock). See [`./email_gate.md` § Why an onboarded user can land on the email gate](./email_gate.md#why-an-onboarded-user-can-land-on-the-email-gate).
+
+</details>
+<details>
+<summary><b>AC-8 (anti-enumeration + abuse-bounded analytics)</b> — conformant</summary>
+
+`deploy/server.py` auth endpoints return neutral payloads with per-IP rate limits (`deploy/magic_link_auth.py:check_rate_limit`); the `/api/client-errors` sink is sanitized (`deploy/client_error_sanitizer.py`). See [`./email_gate.md`](./email_gate.md).
+
+</details>
+<details>
+<summary><b>RZ-2 (capability detection inside worker)</b> — conformant</summary>
+
+Worker `init` (`app/static/vendor/sqlite-worker.js:handlers.init`) reports `opfsCapable`; the main thread reads the field and renders the unsupported-browser panel rather than UA-sniffing.
+
+</details>
+<details>
+<summary><b>RZ-3 (COOP/COEP required)</b> — conformant</summary>
+
+Both dev (`app/server.py:Handler.end_headers`) and prod (`deploy/server.py`) send `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: require-corp` and a strict CSP. Caddy preserves them at the edge.
+
+</details>
+<details>
+<summary><b>RZ-4 (SW never owns SQLite)</b> — conformant</summary>
+
+`app/static/sw.js` is app-shell + update/signature only; `/fellows.db` is explicitly bypassed in the fetch handler.
+
+</details>
+<details>
+<summary><b>EX-CLOUD-LLM</b> — conformant</summary>
+
+Workspace-side handler: consent gate in Settings before the user wires up the cloud client (`recordMcpbConsent()`); persistent dismissable "Going rogue" banner naming the exception via its `data-pna-exception` marker, "cloud-AI exception" detail, and explainer link (`syncNotAPnaBanner()`, `index.html`); in-app explainer `#/exception/EX-CLOUD-LLM` rendering the **per-dimension strength profile** (`PNA_EXCEPTION_STRENGTH` → `renderExceptionPage()`, EX-H8); "Return to PNA mode" control (`returnToPnaMode()`); `<body data-pna-mode/data-pna-exceptions>` machine-readable marker. **EX-H7** consent-to-human propagation is surfaced best-effort via the MCP `instructions` handshake on the data-returning servers (`CLOUD_LLM_PROPAGATION_NOTICE` in `mcp_servers/private_data_ops.py` + `mcp_servers/shared_data_ops.py`); servers stay `mode=ro`, not per-call gated. Code: `app/static/app.js`, `app/static/index.html`, `mcp_servers/`.
+
+</details>
+<details>
+<summary><b>CST-PWA-PRIVATE-SNAPSHOT</b> — conformant</summary>
+
+Private store **requires** a verified real file; absent one there is **no** private store (browse-only, not a degraded store). The timestamped `.db` export (`ehf-fellows-private-data-<date>.db`) is the honest **portability bridge** between installs, not a live store.
+
+</details>
+<details>
+<summary><b>CST-PWA-SANDBOX-SEALED</b> — conformant</summary>
+
+A verified folder dissolves the sandbox boundary — `relationships.db` becomes a real file the user's other tools (MCP `private_data_ops`, backups, CLIs) read directly. **Off-folder there is no folder-resident private store** for an external tool to read: the durable-write guard (#244) means no canonical `relationships.db` exists off-folder, so the OPFS slot stays sealed and invisible. The Claude Desktop setup flow does **not** hide MCP off-folder — `shared_data_ops` legitimately reads the on-device `fellows.db` — but it surfaces a folder warning naming that the *private* bundle needs a connected folder (or a `.db` export). So off-folder it is the *private* store's external readability that is bounded, handled honestly, not the whole affordance.
+
+</details>
+<details>
+<summary><b>CST-PWA-STORAGE-EVICTABLE</b> — conformant</summary>
+
+**Mixed — settings *avoided*, relationships *mitigated*.** The prefs (`has_email_only`/`self_email`) and workspace-identity metadata never reach OPFS off-folder (localStorage-only; identity minted only on the first canonical folder write). But relationships rows the worker *hydrated* into OPFS during a folder session **linger** there after the handle drops (Lock, or the `no-handle` a real OS returns post-restart) — durable private data in evictable storage, which a bare "Avoided" over-claimed. Handling: a dedicated **migration banner** (naming the count — "Save your N saved groups → *Save my groups*") surfaces the stranded OPFS data and nudges the user to move it onto disk before the browser can evict it — never silently left, never wiped (wiping would be data loss).
+
+</details>
+<details>
+<summary><b>CST-PWA-NO-SYNC</b> — conformant</summary>
+
+Origin/device-local silos, no built-in portability. The in-db **workspace identity** (`workspace_uuid` + monotonic `write_generation` + `device_label` in the `settings` table) answers "which copy is canonical?" for the content-previewed re-pick chooser; the `.db` export is the manual cross-device bridge.
+
+</details>
+<details>
+<summary><b>CST-PWA-SINGLE-OWNER</b> — conformant</summary>
+
+Multi-tab contention with no OS file lock → Web Locks + ownership-conflict detection guard the canonical folder write.
+
+</details>
+<details>
+<summary><b>CST-PWA-NO-BACKGROUND</b> — conformant</summary>
+
+No reliable scheduled background execution (esp. iOS) → backups are opportunistic: a per-boot debounced snapshot in folder mode, never a scheduled promise.
+
+</details>
+<details>
+<summary><b>CST-PWA-SERVER-FLOOR</b> — conformant</summary>
+
+Needs an origin + TLS + secure context; true serverless-local is unreachable. Bounded to distribution/update only (Never-SaaS) — no per-user RW state on the server.
+
+</details>
 
