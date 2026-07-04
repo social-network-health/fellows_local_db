@@ -119,6 +119,23 @@ def search_fellows(conn, q: str) -> list:
     return [row_to_fellow(row) for row in cur.fetchall()]
 
 
+def get_provenance(conn) -> list:
+    """The in-band provenance chain stamped into fellows.db by the build
+    (hop 0 = ultimate source, e.g. the 2026-04-08 Knack extraction). Returns
+    [] for a pre-provenance DB — OPFS copies from before the table shipped
+    persist indefinitely under the install-only policy, so every reader must
+    tolerate its absence."""
+    try:
+        cur = conn.execute(
+            "SELECT hop, system, artifact, artifact_sha256, acquired_at, method, note "
+            "FROM provenance ORDER BY hop"
+        )
+    except sqlite3.OperationalError:
+        return []
+    cols = ["hop", "system", "artifact", "artifact_sha256", "acquired_at", "method", "note"]
+    return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+
 def get_stats(conn) -> dict:
     """Aggregate statistics for the stats page."""
     total = conn.execute("SELECT COUNT(*) FROM fellows").fetchone()[0]

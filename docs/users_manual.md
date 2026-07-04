@@ -776,6 +776,11 @@ Click **⬇ Export a directory**. Two-phase flow:
    Downloads before sending — browsers can't attach files to a `mailto:`
    automatically.
 
+Both formats end with a small **Data source** footer (e.g. *"Data
+source: EHF Fellows Directory (Knack), archived 2026-04-08 · exported
+from the EHF Fellows Local Directory"*) so anyone reading the exported
+file later knows where the contact data originally came from.
+
 ![Export panel before clicking Export.](images/users_manual/06_export_panel.png)
 ![Export panel after Export — View link and "Email it to me" appear.](images/users_manual/07_export_done.png)
 
@@ -884,6 +889,15 @@ A line below the block shows when fellow data was last fetched (or
 the most recent failure), e.g. *"Last update check: 2026-05-04T18:22:07Z
 — succeeded."* — useful when a fellow asks "am I seeing the latest
 data?".
+
+Beneath that, a **Data source** line answers "where did this directory
+ultimately come from?" — e.g. *"Data source: EHF Fellows Directory
+(Knack), archived 2026-04-08."* The date is read from provenance
+information embedded in the directory data file itself (not from this
+app's code), so it stays truthful even if the data file travels to
+another app or device. On an older data file that predates the
+embedded provenance, the line shows the source without an archive
+date.
 
 ![About page.](images/users_manual/12_about_page.png)
 

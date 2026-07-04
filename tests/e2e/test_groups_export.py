@@ -179,6 +179,25 @@ class TestExportDownloads:
         )
         href = view.get_attribute("href") or ""
         assert href.startswith("blob:"), f"expected blob: URL, got {href!r}"
+        # Provenance footer (AC-17 / UM-3): the exported artifact carries a
+        # line naming the ultimate data source, derived from the in-band
+        # chain in fellows.db. Vintage-robust: a pre-provenance DB (no
+        # chain) must emit NO footer rather than an unread claim — the
+        # data-plane tests in tests/test_database.py enforce that a rebuilt
+        # DB actually carries the chain.
+        chain = page.evaluate(
+            "() => window.__dataProvider.getProvenance"
+            " ? window.__dataProvider.getProvenance() : []"
+        )
+        if chain:
+            assert 'provenance-footer' in text, "expected provenance footer in export"
+            assert chain[0]["system"] in text
+            if chain[0].get("acquired_at"):
+                assert chain[0]["acquired_at"] in text
+        else:
+            assert "provenance-footer" not in text, (
+                "pre-provenance DB must not emit a provenance footer"
+            )
 
     def test_pdf_export_downloads_with_pdf_magic_bytes(
         self, worker_data_folder, base_url_fixture

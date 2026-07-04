@@ -317,6 +317,23 @@ class TestAPI:
             assert "count" in first
             assert isinstance(first["count"], int)
 
+    def test_api_provenance_returns_chain(self):
+        """/api/provenance serves the in-band chain from fellows.db (AC-17).
+        Vintage-robust: a pre-provenance DB yields [] (readers fall back);
+        when the chain is present, hop 0 names the ultimate source, not
+        this app."""
+        status, ctype, body = get("/api/provenance")
+        assert status == 200
+        assert "application/json" in ctype
+        chain = json.loads(body)
+        assert isinstance(chain, list)
+        if chain:
+            hop0 = chain[0]
+            assert hop0["hop"] == 0
+            assert hop0["system"]
+            assert hop0["system"] != "fellows_local_db"
+            assert [h["hop"] for h in chain] == list(range(len(chain)))
+
     def test_static_js(self):
         status, ctype, body = get("/app.js")
         assert status == 200

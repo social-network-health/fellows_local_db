@@ -107,6 +107,20 @@ def search_fellows(conn, q: str) -> list:
     return [row_to_fellow(row) for row in cur.fetchall()]
 
 
+def get_provenance(conn) -> list:
+    """In-band provenance chain (mirrors app/fellows_queries.py:get_provenance).
+    [] for a pre-provenance DB — readers must tolerate the table's absence."""
+    try:
+        cur = conn.execute(
+            "SELECT hop, system, artifact, artifact_sha256, acquired_at, method, note "
+            "FROM provenance ORDER BY hop"
+        )
+    except sqlite3.OperationalError:
+        return []
+    cols = ["hop", "system", "artifact", "artifact_sha256", "acquired_at", "method", "note"]
+    return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+
 def get_stats(conn) -> dict:
     total = conn.execute("SELECT COUNT(*) FROM fellows").fetchone()[0]
 

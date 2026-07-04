@@ -1319,6 +1319,24 @@ handlers.getStats = async function () {
   };
 };
 
+// In-band provenance chain (AC-17), stamped into fellows.db by the build.
+// Returns [] for a pre-provenance DB: OPFS copies from before the table
+// shipped persist indefinitely under the install-only policy, so absence is
+// an expected state, not an error.
+handlers.getProvenance = async function () {
+  var db = _requireFellowsDb();
+  try {
+    return dbSelectAll(
+      db,
+      'SELECT hop, system, artifact, artifact_sha256, acquired_at, method, note ' +
+        'FROM provenance ORDER BY hop',
+      null
+    );
+  } catch (e) {
+    return [];
+  }
+};
+
 // ----- ensureFellowsDb (page-driven cold-start fetch — opt-in policy) ------
 // Page calls this on every boot, only after the gate decision tree
 // resolves to directory mode. The boot path is install-only by design
