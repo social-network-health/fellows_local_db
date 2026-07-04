@@ -16,7 +16,7 @@
 
 ## The matched set
 
-The toolkit gains three **general mechanisms**, each discovered by building fellows and each riding
+The toolkit gains four **general mechanisms**, each discovered by building fellows and each riding
 upstream with fellows as its demonstrating design. They are duals/siblings and share machinery
 (`lint-spec-ids.py` header tracing, the `PNA-DEFINITION` sentinel, the validation-not-certification
 framing, the three-layer lint/evaluate/human split):
@@ -26,6 +26,8 @@ framing, the three-layer lint/evaluate/human split):
 | 1 | **Exceptions** (`EX-*`) | a deviation the **user raises** and the app handles (exits PNA mode) | cloud-LLM finding (2026-05-30) | ✅ **MERGED** — PNA Toolkit main (evolved to EX-H1..H8) |
 | 2 | **Constraints** (`CST-*`) | a ceiling the **platform imposes** and the app handles (stays in PNA mode) | PWA-private-store finding (2026-06-01) | **MERGED** — PNT PR #18 |
 | 3 | **User-mediation** (working name) | the **human is the actuator**; the proposer stages, the human disposes | actuation-surface finding (2026-06-07) | spec **not filed** — **MVD-ready**; demonstrate-now (PRM = built 2nd demonstrator); feature deferred. See the **arc spine**. |
+
+| 4 | **Provenance chain** (working id SH-7) | ultimate-source provenance travels **in-band with the data** across PNA-to-PNA imports (hop 0 = ultimate source; importers append, never rewrite) | fellows→prm import provenance finding (2026-07-04) | spec **not filed** — **exporter demonstrator landing** (fellows PRs #291/#292/#293); importer = prm handoff. See [`pna_toolkit_provenance_chain_contribution.md`](pna_toolkit_provenance_chain_contribution.md). |
 
 Plus one **finding/principle** (not a new mechanism) that updates an existing constraint's frontier:
 
@@ -65,7 +67,16 @@ Plus one **finding/principle** (not a new mechanism) that updates an existing co
 - **Remaining work (sequenced in the arc plan §3/§7):** (a) frame the green tests under UM-1/2/3; (b) boundary audit — **honestly attest** the private-data **restore** legibility gap, frontier = **#259**, do not block on it; (c) pin the workspace-AI stance before local-AI/`window.ai`; (d) attest in fellows `docs/Architecture.md` § User-mediation; (e) PRM carries a user-mediation boundary list at its M6; (f) THEN draft the PNT spec mechanism mirroring the matched set.
 - **Dependencies:** Step C (upstream draft) builds on the merged Exceptions + Constraints (done) and waits only on toolkit-instance bandwidth after the Tier-0 keystone. Step A (fellows MVD prep) is unblocked and parallel-safe **now**.
 
-## 4. EAR principle (#258) — FRONTIER FOLLOW-UP, GATED
+## 4. Provenance chain (SH-7, working id) — STAGED; exporter demonstrator landing
+
+- **Plan:** [`pna_toolkit_provenance_chain_contribution.md`](pna_toolkit_provenance_chain_contribution.md).
+- **The mechanism:** an append-only `provenance` table embedded **in the Shared DB file itself** — hop 0 = ultimate source ("EHF Fellows Directory (Knack), archived 2026-04-08"); an ingesting PNA preserves upstream hops and appends its own. Entries are attested claims, not proofs; no per-build volatile values (deterministic rebuilds); batch-level (per-field stays AC-PRM-B); readers tolerate absence; the chain itself is sensitive metadata (UM-3 on re-export).
+- **Why upstream:** AC-17 makes provenance normative *within* one PNA, but it dies at the PNA-to-PNA boundary — prm's `source` is a flat string with no source-of-source, and cross-PNA interchange is `federated-read (deferred)`. Both reference designs need opposite halves of the same mechanism.
+- **Fellows side (exporter demonstrator):** PRs #291 (report emitters + AC-17 legibility), #292 (in-band chain: ETL stamp, determinism + diff-tolerance tests, attestation), #293 (About-page Data source line + export footers). Operator step: `just db-rebuild` rotates `fellows_db_sha` once.
+- **prm side (importer demonstrator):** NOT started — handoff spec in the plan § 4 (fellows source label + direct-SQLite parser, source-chain storage, import-batch descriptor incl. ingest-time sha, UI vocabulary, attestation).
+- **Filing gate:** re-verify PNT `origin/main` first (verified absent at `facea9f`, 2026-07-04); file only after the exporter demonstrator is merged (ideally both), with maintainer go-ahead. New conditional obligation → reference-design route.
+
+## 5. EAR principle (#258) — FRONTIER FOLLOW-UP, GATED
 
 - **Not a new mechanism** — a finding/principle: *encrypt what crosses a trust boundary, not the store behind your own OS.* Recorded in fellows via **PR #258** (`docs/ac_decisions_log.md`, `docs/Architecture.md` non-goal note, `docs/architectural_findings.md`).
 - **Upstream shape:** a **frontier-note refinement** to the already-merged `spec/constraints.md` — sharpens the `CST-PWA-NO-SYNC` / `CST-PWA-PRIVATE-SNAPSHOT` "encrypt-then-email-to-self" candidate from "unproven idea" to the stated principle (encrypt the *transit artifact*, keep the live store tool-readable — which is *why* app-EAR-for-the-live-store was rejected, per #256).
@@ -78,7 +89,8 @@ Plus one **finding/principle** (not a new mechanism) that updates an existing co
 1. **Exceptions** — ✅ **already merged; nothing to file.** (Was listed "file next" in the first draft of this map — corrected.)
 2. **Reference-design `Architecture.md` sync** — ✅ **DONE (PNT PR #54).** Fixed a stale AC-5 test ref + added the #258 EAR non-goal. The apparent ~29-line drift was mostly intentional curation (file-level test refs, condensed prose); #260's evidence was already file-level-covered, so no re-granularization. `just ci` green.
 3. **User-mediation** — **MVD-primary, demonstrate-now (decided 2026-06-08).** Step A (fellows MVD prep) runs now in parallel with the keystone; PRM carries the mutation-side boundary at its M6 (Step B); the PNT spec draft (Step C) follows the keystone, test-first, citing fellows + PRM. The AI-writes feature is deferred. See the arc spine §7 for the full sequence. (Verified absent from PNT main 2026-06-08.)
-4. **EAR frontier note** — fold into a constraints follow-up once #257 lands an encrypted-export to demonstrate it.
+4. **Provenance chain (SH-7)** — file only after the fellows exporter PRs (#291/#292/#293) merge and, ideally, the prm importer (plan § 4 handoff) exists; re-verify PNT `origin/main` first. (Verified absent at `facea9f`, 2026-07-04.)
+5. **EAR frontier note** — fold into a constraints follow-up once #257 lands an encrypted-export to demonstrate it.
 
 ## Cross-cutting reconciliation note
 
