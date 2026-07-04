@@ -32,16 +32,39 @@ def dump(db_path):
     return rows
 
 
-def main():
+def provenance_summary(db_path):
+    """One-line description of the DB's in-band provenance chain, or a note
+    that it predates the table. Informational only — the diff verdict is about
+    the fellows-table CONTENT; the provenance table is expected to differ
+    between a fresh build and the frozen 2026-04-08 reference backup."""
+    conn = sqlite3.connect(db_path)
+    try:
+        rows = conn.execute(
+            "SELECT hop, system, acquired_at FROM provenance ORDER BY hop"
+        ).fetchall()
+    except sqlite3.OperationalError:
+        return "no provenance table (pre-provenance build)"
+    finally:
+        conn.close()
+    return "; ".join(
+        f"hop {hop}: {system}" + (f" @ {acquired_at}" if acquired_at else "")
+        for hop, system, acquired_at in rows
+    ) or "provenance table present but empty"
+
+
+def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("new_db")
     ap.add_argument("ref_db")
     ap.add_argument("--show", type=int, default=3,
                     help="Show N example mismatches per column (default 3)")
-    args = ap.parse_args()
+    args = ap.parse_args(argv)
 
     new = dump(args.new_db)
     ref = dump(args.ref_db)
+
+    print(f"provenance new: {provenance_summary(args.new_db)}")
+    print(f"provenance ref: {provenance_summary(args.ref_db)}")
 
     only_in_new = sorted(set(new) - set(ref))
     only_in_ref = sorted(set(ref) - set(new))
@@ -89,7 +112,7 @@ def main():
         print(f"  {marker} {col}: {n}")
 
     if total_mismatches == 0:
-        print("\n✓ bytewise match on all columns")
+        print("\n✓ column-exact match on all fellows columns")
         return 0
 
     print(f"\n✗ {total_mismatches} total mismatches. Examples:")
