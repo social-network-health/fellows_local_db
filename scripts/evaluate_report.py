@@ -26,11 +26,19 @@ inside the AC findings they bear on." So this emitter:
 
   * emits **one finding per AC-* attestation row** — the Universal-ACs and
     Flavor-derived-ACs tables, plus the not-applicable table;
+  * emits each **RZ-*** row (the Toolkit-Version 0.2 Layer-2 realizations)
+    under its **retired legacy AC id** via `RETIRED_RZ_TO_AC` — the schema and
+    lint at PNT origin/main only accept `^AC-…$`, and PNT's own reference
+    report for prm carries RZ-5 as `AC-PRM-C` the same way (see PNT
+    spec/axes.md § Retired IDs). The finding's evidence names the RZ id so the
+    v0.2 identity is not lost;
   * **folds each EX-*/CST-* row into the `evidence` of the AC finding(s) it
     bears on**, via `EXTENSION_AC_HOME`. If `docs/Architecture.md` grows an
-    EX/CST row this map doesn't cover, `build_evaluate_report()` RAISES rather
-    than silently dropping a declared exception/constraint — the same
-    fails-loudly discipline the rest of the conformance gate enforces;
+    EX/CST row this map doesn't cover, an RZ row `RETIRED_RZ_TO_AC` doesn't
+    cover, or a row in a *new* conformance-id family entirely,
+    `build_evaluate_report()` RAISES rather than silently dropping a declared
+    commitment — the same fails-loudly discipline the rest of the conformance
+    gate enforces;
   * leaves the fellows-local `UM-*` user-mediation rows and the
     mediated-boundary registry out of scope here (they sit *beneath* the AC
     families and are surfaced in the fellows-format `docs/conformance/report.json`
@@ -99,6 +107,27 @@ EXTENSION_AC_HOME = {
     "CST-PWA-SERVER-FLOOR": ["AC-2"],
 }
 
+# RZ-* (Toolkit-Version 0.2 Layer-2 realization) row -> the retired legacy AC id
+# it carried before the L1/L2 layering pass. The render contract at PNT
+# origin/main is AC-keyed (`^AC-…$`), so RZ rows are emitted under these frozen
+# ids — the same convention PNT's vendored prm report uses (RZ-5 -> AC-PRM-C).
+# Source of truth: PNT spec/axes.md § "Retired IDs (redirects)".
+RETIRED_RZ_TO_AC = {
+    "RZ-1": "AC-3",
+    "RZ-2": "AC-12",
+    "RZ-3": "AC-13",
+    "RZ-4": "AC-14",
+    "RZ-5": "AC-PRM-C",
+}
+
+# Conformance-id families this emitter knows how to place. UM-* rows (and the
+# mediated-boundary registry, whose first cells are prose, not ids) are
+# *deliberately* out of the AC-keyed toolkit model — they live in the
+# fellows-format report.json. Anything else id-shaped is a new family the
+# emitter must be taught about, and build_evaluate_report() raises on it.
+_ID_SHAPED = re.compile(r"^[A-Z]{2,4}-[A-Z0-9-]+$")
+_KNOWN_FAMILIES = ("AC-", "EX-", "CST-", "RZ-", "UM-")
+
 
 # --- Markdown helpers --------------------------------------------------------
 
@@ -165,6 +194,15 @@ def parse_pna_spec_version(md_text):
 
 # --- Citation / evidence construction ---------------------------------------
 
+def _md_to_text(md):
+    """Flatten a markdown table cell to plain evidence text: links -> their
+    label, emphasis/backtick markers stripped, whitespace collapsed. Kept
+    deliberately dumb — the cells are single GFM table cells, not documents."""
+    text = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", md or "")
+    text = text.replace("**", "").replace("`", "")
+    return re.sub(r"\s+", " ", text).strip()
+
+
 def _ref_to_citation(ref):
     """A `path.py[::name]` attestation ref -> a schema code_location with a
     repo-relative path (bare-filename shorthand resolved via the code index)."""
@@ -195,10 +233,12 @@ def _map_status(status_text):
     return "unable-to-determine"
 
 
-def _ac_finding(row, ext_evidence):
-    """Build one schema `finding` from an AC attestation row + any EX/CST
-    evidence folded in (ext_evidence: list of schema evidence dicts)."""
-    ac_id = _id_token(row["id"])
+def _ac_finding(row, ext_evidence, ac_id=None, rz_note=None):
+    """Build one schema `finding` from an attestation row + any EX/CST evidence
+    folded in (ext_evidence: list of schema evidence dicts). ac_id overrides the
+    row's own id token (used to emit an RZ-* row under its retired legacy AC
+    id); rz_note, when given, is appended as evidence naming that mapping."""
+    ac_id = ac_id or _id_token(row["id"])
     status_text = row["status_text"]
     status = _map_status(status_text)
     finding = {
@@ -212,6 +252,15 @@ def _ac_finding(row, ext_evidence):
         finding["citations"] = citations
 
     evidence = []
+    realization = _md_to_text(row.get("realization"))
+    if realization:
+        # The row's Realization prose from docs/Architecture.md — the human
+        # story behind the citation list (e.g. AC-17's column-by-column Knack
+        # provenance), so a report reader is not left with bare file paths.
+        evidence.append({
+            "source": "human",
+            "detail": "Realization (docs/Architecture.md): {}".format(realization),
+        })
     if row["refs"]:
         joined = "; ".join("{} -> {}".format(rs["ref"], rs["status"]) for rs in row["refs"])
         evidence.append({
@@ -224,13 +273,20 @@ def _ac_finding(row, ext_evidence):
             ).format(len(row["refs"]), joined),
         })
     if row["review_kind"]:
+        verification = _md_to_text(row.get("verification_text"))
         evidence.append({
             "source": "human",
             "detail": (
-                "docs/Architecture.md also declares a non-test verification kind for this "
-                "row (human-review / code inspection / by construction / by bounding)."
+                "docs/Architecture.md declares a non-test verification kind for this "
+                "row; its Verification cell reads: {}".format(verification)
+                if verification else
+                "docs/Architecture.md also declares a non-test verification kind for "
+                "this row (human-review / code inspection / by construction / by "
+                "bounding)."
             ),
         })
+    if rz_note:
+        evidence.append({"source": "human", "detail": rz_note})
     if _status_is_partial(status_text):
         finding["needs_human_review"] = True
         evidence.append({
@@ -263,13 +319,66 @@ def build_evaluate_report(commit="__AUTO__"):
 
     rows = evaluate_attestation(arch_md)
 
-    # Partition parsed attestation rows by id prefix.
-    ac_rows = [r for r in rows if _id_token(r["id"]).startswith("AC-")]
-    ext_rows = {_id_token(r["id"]): r for r in rows
-                if _id_token(r["id"]).startswith(("EX-", "CST-"))}
+    # Partition parsed attestation rows by id family, keeping document order
+    # for the finding-emitting rows. AC-* emit as themselves; RZ-* emit under
+    # their retired legacy AC id (render contract is AC-keyed); EX-*/CST-* fold
+    # into their home ACs' evidence; UM-* (and the mediated-boundary registry,
+    # whose first cells are prose, not ids) are deliberately out of the
+    # AC-keyed toolkit model and live in the fellows-format report.json. Any
+    # OTHER id-shaped family is one this emitter has never met — raise rather
+    # than silently drop it (the RZ relabel proved silent drops happen).
+    emit_rows = []  # (row, emit_ac_id, rz_note_or_None)
+    ext_rows = {}
+    for r in rows:
+        tok = _id_token(r["id"])
+        if tok.startswith("AC-"):
+            emit_rows.append((r, tok, None))
+        elif tok.startswith("RZ-"):
+            legacy = RETIRED_RZ_TO_AC.get(tok)
+            if not legacy:
+                raise ValueError(
+                    "evaluate_report: realization row {!r} has no RETIRED_RZ_TO_AC "
+                    "mapping. Add its retired legacy AC id (PNT spec/axes.md § Retired "
+                    "IDs) so the row is not silently dropped from the evaluate "
+                    "report.".format(tok))
+            emit_rows.append((r, legacy, (
+                "Attested as {rz} (Toolkit-Version 0.2 Layer-2 realization id); "
+                "emitted under retired id {ac} because the render contract is "
+                "AC-keyed (see PNT spec/axes.md § Retired IDs)."
+            ).format(rz=tok, ac=legacy)))
+        elif tok.startswith(("EX-", "CST-")):
+            ext_rows[tok] = r
+        elif tok.startswith("UM-"):
+            pass  # fellows-local user-mediation rows; report.json carries them
+        elif _ID_SHAPED.match(tok):
+            raise ValueError(
+                "evaluate_report: attestation row {!r} belongs to a conformance-id "
+                "family this emitter does not know ({}). Teach build_evaluate_report() "
+                "where it goes so it is not silently dropped.".format(
+                    tok, ", ".join(_KNOWN_FAMILIES)))
 
-    ac_ids = {_id_token(r["id"]) for r in ac_rows}
-    ac_ids |= {ac for ac, _ in parse_not_applicable(arch_md)}
+    ac_ids = {ac_id for _, ac_id, _ in emit_rows}
+
+    # Not-applicable rows: same retired-id mapping and same fail-loud rule.
+    not_applicable = []
+    for na_id, reason in parse_not_applicable(arch_md):
+        if na_id.startswith("RZ-"):
+            legacy = RETIRED_RZ_TO_AC.get(na_id)
+            if not legacy:
+                raise ValueError(
+                    "evaluate_report: not-applicable row {!r} has no RETIRED_RZ_TO_AC "
+                    "mapping (PNT spec/axes.md § Retired IDs).".format(na_id))
+            reason = "{} (attested as {} at Toolkit-Version 0.2.)".format(
+                reason.rstrip(), na_id)
+            na_id = legacy
+        elif not na_id.startswith("AC-"):
+            raise ValueError(
+                "evaluate_report: not-applicable row {!r} is not an AC-*/RZ-* id; the "
+                "render contract cannot express it. Teach build_evaluate_report() "
+                "where it goes.".format(na_id))
+        not_applicable.append((na_id, reason))
+
+    ac_ids |= {ac for ac, _ in not_applicable}
 
     # Fail loudly if a declared EX/CST row has no AC home (would otherwise be
     # silently dropped from the report).
@@ -298,9 +407,12 @@ def build_evaluate_report(commit="__AUTO__"):
                     "emitted AC finding. Fix the mapping.".format(tok, ac))
             ext_evidence_by_ac.setdefault(ac, []).append({"source": "human", "detail": detail})
 
-    findings = [_ac_finding(r, ext_evidence_by_ac.get(_id_token(r["id"]), [])) for r in ac_rows]
+    findings = [
+        _ac_finding(r, ext_evidence_by_ac.get(ac_id, []), ac_id=ac_id, rz_note=rz_note)
+        for r, ac_id, rz_note in emit_rows
+    ]
 
-    for ac_id, reason in parse_not_applicable(arch_md):
+    for ac_id, reason in not_applicable:
         findings.append({
             "ac_id": ac_id,
             "ac_source": "flavor-derived" if ac_id in FLAVOR_DERIVED_ACS else "universal",

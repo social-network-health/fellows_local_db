@@ -96,6 +96,10 @@ def pnt_anchor_url(row_id):
         return PNT_SPEC + "exceptions.md" + anchor
     if tok.startswith("CST-"):
         return PNT_SPEC + "constraints.md" + anchor
+    if tok.startswith("RZ-"):
+        # Layer-2 realizations (v0.2) are defined in axes.md; each RZ row keeps
+        # a working anchor there (plus its retired AC id's legacy anchor).
+        return PNT_SPEC + "axes.md" + anchor
     if tok.startswith("AC-"):
         return PNT_SPEC + ("axes.md" if tok in _AXES_ACS else "PNA_Spec.md") + anchor
     return None
@@ -380,8 +384,9 @@ def render_md(report):
     L.append("## Attestation rows")
     L.append("")
     L.append("Each row's ID links to its definition in the PNT spec. Status is "
-             "summarized; the full realization + verification prose lives in "
-             "[`docs/Architecture.md`](../Architecture.md).")
+             "summarized; each row's realization prose is expandable in the "
+             "[appendix below](#how-each-row-is-realized), and the source of "
+             "truth stays [`docs/Architecture.md`](../Architecture.md).")
     L.append("")
     L.append("| Row | Status | Evidence (cited test → static state) |")
     L.append("|---|---|---|")
@@ -396,6 +401,29 @@ def render_md(report):
         label = "[{id}]({url})".format(id=r["id"], url=url) if url else r["id"]
         L.append("| {label} | {status} | {ev} |".format(
             label=label, status=_short_status(r["status_text"]), ev=ev))
+    L.append("")
+
+    # Realization appendix — the human story behind each citation list (e.g.
+    # AC-17's "every column maps to the 2026-04-08 Knack extraction"), carried
+    # verbatim from docs/Architecture.md so a reader learns *how* a row is met
+    # without leaving this file. Collapsed so the table above stays scannable.
+    L.append("## How each row is realized")
+    L.append("")
+    L.append("Each row's **Realization** cell from `docs/Architecture.md`, "
+             "verbatim — how the code meets the commitment (for CST rows: how "
+             "the platform ceiling is handled). Relative links resolve from "
+             "`docs/`.")
+    L.append("")
+    for r in report["rows"]:
+        if not r.get("realization"):
+            continue
+        L.append("<details>")
+        L.append("<summary><b>{id}</b> — {status}</summary>".format(
+            id=r["id"], status=_short_status(r["status_text"])))
+        L.append("")
+        L.append(r["realization"])
+        L.append("")
+        L.append("</details>")
     L.append("")
     return "\n".join(L) + "\n"
 
@@ -431,9 +459,21 @@ def write_artifacts(report):
     _er.write_report()
 
 
+KNOWN_FLAGS = {"--no-gh", "--no-write", "--check", "--if-stale"}
+
+
 def main(argv):
+    # Strict flag handling: an unrecognized flag must ERROR, not silently fall
+    # through to the default write path (a stray `--check` once regenerated the
+    # committed artifacts when the caller meant check-only). `--check` is
+    # accepted as an alias of `--no-write` for symmetry with evaluate_report.py.
+    unknown = [a for a in argv if a not in KNOWN_FLAGS]
+    if unknown:
+        print("conformance_report: unknown flag(s): {}\nKnown flags: {}".format(
+            " ".join(unknown), " ".join(sorted(KNOWN_FLAGS))), file=sys.stderr)
+        return 2
     probe_gh = "--no-gh" not in argv
-    do_write = "--no-write" not in argv
+    do_write = "--no-write" not in argv and "--check" not in argv
     if_stale = "--if-stale" in argv
 
     # Snapshot-freshness short-circuit for `just test`: if the committed report

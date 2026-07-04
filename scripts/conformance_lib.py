@@ -146,9 +146,21 @@ def is_separator(line):
     return bool(re.match(r"^\s*\|?[\s:|-]+\|[\s:|-]*$", line)) and "-" in line
 
 
+def _realization_col(lower_header):
+    """Index of the column carrying the row's realization prose, or None.
+    The attestation tables name it 'Realization'; the constraint table's
+    equivalent is 'Handling (capability reduction)'."""
+    for idx, h in enumerate(lower_header):
+        if h.startswith("realization") or h.startswith("handling"):
+            return idx
+    return None
+
+
 def parse_attestation_rows(md_text):
-    """Yield (row_id, verification_cell, status_cell) for every data row of every
-    table that has both a 'Verification' and a 'Status' column header."""
+    """Yield (row_id, realization_cell, verification_cell, status_cell) for every
+    data row of every table that has both a 'Verification' and a 'Status' column
+    header. realization_cell is '' when the table has no realization-carrying
+    column (e.g. the UM property table)."""
     lines = md_text.splitlines()
     i = 0
     while i < len(lines):
@@ -158,11 +170,15 @@ def parse_attestation_rows(md_text):
             lower = [h.lower() for h in header]
             if "verification" in lower and "status" in lower:
                 v_idx, s_idx = lower.index("verification"), lower.index("status")
+                r_idx = _realization_col(lower)
                 j = i + 2
                 while j < len(lines) and lines[j].lstrip().startswith("|") and not is_separator(lines[j]):
                     cells = split_row(lines[j])
                     if len(cells) > max(v_idx, s_idx):
-                        yield cells[0], cells[v_idx], cells[s_idx]
+                        realization = (
+                            cells[r_idx] if r_idx is not None and len(cells) > r_idx else ""
+                        )
+                        yield cells[0], realization, cells[v_idx], cells[s_idx]
                     j += 1
                 i = j
                 continue
@@ -270,12 +286,15 @@ def classify_ref(ref):
 
 def evaluate_attestation(md_text):
     """Structured evaluation of every attestation row. Returns a list of dicts:
-      {id, status_text, conformant, review_kind, refs:[{ref,status,detail}],
-       findings:[str]}
-    `findings` is non-empty only for conformant rows whose evidence is bad —
-    the same set the pytest gate asserts on."""
+      {id, status_text, conformant, review_kind, realization, verification_text,
+       refs:[{ref,status,detail}], findings:[str]}
+    `realization`/`verification_text` are the raw markdown cell texts, carried so
+    the report emitters can surface the human prose (e.g. AC-17's data-provenance
+    story) instead of flattening a row to bare test refs. `findings` is non-empty
+    only for conformant rows whose evidence is bad — the same set the pytest gate
+    asserts on."""
     out = []
-    for row_id, verification, status in parse_attestation_rows(md_text):
+    for row_id, realization, verification, status in parse_attestation_rows(md_text):
         haystack = (verification + " " + status).lower()
         refs = TEST_REF.findall(verification + " " + status)
         ref_statuses = []
@@ -314,6 +333,8 @@ def evaluate_attestation(md_text):
             "status_text": status,
             "conformant": conformant,
             "review_kind": review_kind,
+            "realization": realization,
+            "verification_text": verification,
             "refs": ref_statuses,
             "findings": findings,
         })
