@@ -1,18 +1,18 @@
 {
   "meta": {
-    "generated_at": "2026-06-11T07:10:14Z",
-    "git_sha": "3e35770",
+    "generated_at": "2026-07-04T11:44:51Z",
+    "git_sha": "fede3fc",
     "source": "docs/Architecture.md",
     "generator": "scripts/conformance_report.py",
-    "toolkit_version": "0.1 (draft)",
+    "toolkit_version": "0.2",
     "note": "Deterministic serialization of scripts/conformance_lib.py. 'live' = a real, non-deferred assertion exists; pass/fail is enforced by the suite itself (`just test`). Not the LLM evaluate flow. See plans/conformance_report_and_gate.md."
   },
   "headline": {
     "verdict": "conditionally-conformant",
     "deferral_count": 0,
     "deferral_cap": 3,
-    "conformant_rows": 35,
-    "total_rows": 39,
+    "conformant_rows": 37,
+    "total_rows": 41,
     "findings_count": 0,
     "ok": true
   },
@@ -24,9 +24,16 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Two SQLite DBs: `fellows.db` (read-only contact data) + `relationships.db` (read-write, user-owned), separate OPFS files. `app/relationships.py:open_db()` ATTACHes fellows as `f` with `?mode=ro`; the worker owns the pair.",
+      "verification_text": "`tests/test_relationships.py::test_attach_fellows_readonly_allows_select`, `tests/test_relationships.py::test_attach_fellows_readonly_denies_write`; `tests/test_database.py`",
       "refs": [
         {
           "ref": "tests/test_relationships.py::test_attach_fellows_readonly_allows_select",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/test_relationships.py::test_attach_fellows_readonly_denies_write",
           "status": "live",
           "detail": ""
         },
@@ -43,6 +50,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`WORKER_RPC_VERSION`/`RELATIONSHIPS_SCHEMA_VERSION` in `vendor/sqlite-worker.js`; `EXPECTED_WORKER_RPC_VERSION` in `app.js`; `refuseIfVersionSkew()` gates mutating RPCs on mismatch, reads still pass; build label is not the gate.",
+      "verification_text": "`tests/e2e/test_version_handshake.py::test_version_skew_refuses_mutations_but_allows_reads`; `tests/e2e/test_worker_rpc.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_version_handshake.py::test_version_skew_refuses_mutations_but_allows_reads",
@@ -62,6 +71,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`?gate=1` forces the email gate regardless of stuck state (`app/static/app.js:startBrowserUx`); Reset Everything (`app/static/app.js:clearEverything`) + Clear App Cache `POST /api/logout` and reload.",
+      "verification_text": "`tests/e2e/test_email_gate.py`; `tests/e2e/test_reset_everything.py`; `tests/e2e/test_clear_app_cache.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_email_gate.py",
@@ -86,6 +97,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Build label (AC-15), `?diag=1` state-dump, sanitized error capture (`deploy/client_error_sanitizer.py`), bug-report flow, `?gate=1` escape, boot watchdog with named phase marks, slow-boot persistence.",
+      "verification_text": "`tests/e2e/test_diagnostics_panel.py`; `test_boot_watchdog.py`; `test_boot_error_panel.py`; `test_bug_report.py`; `test_boot_beacon.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_diagnostics_panel.py",
@@ -120,9 +133,16 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": true,
+      "realization": "`vendor/sqlite-worker.js:maybeBackupRelationshipsDb()` \u2014 per-boot debounced (`BACKUP_DEBOUNCE_MS`), 5-slot rotation ring; folder mode writes the ring into the user folder.",
+      "verification_text": "`tests/e2e/test_user_folder_storage.py::test_snapshot_lands_in_folder_when_folder_mode_active`, `tests/e2e/test_user_folder_storage.py::test_opfs_to_folder_backup_migration_on_folder_boot`; restore via `tests/e2e/test_settings.py`. Debounce cadence by code inspection (LLM rubric).",
       "refs": [
         {
           "ref": "tests/e2e/test_user_folder_storage.py::test_snapshot_lands_in_folder_when_folder_mode_active",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_user_folder_storage.py::test_opfs_to_folder_backup_migration_on_folder_boot",
           "status": "live",
           "detail": ""
         },
@@ -139,9 +159,16 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "About-page *Update directory data*; `app/static/vendor/sqlite-worker.js:previewFellowsDbSwap()`/`applyFellowsDbSwap()` preview `group_members` orphaned by the swap before commit; one-shot soft scan.",
+      "verification_text": "`tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel`, `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap`; `test_orphan_soft_scan.py`; `test_versioned_fellows_db.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap",
           "status": "live",
           "detail": ""
         },
@@ -163,6 +190,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Worker `app/static/vendor/sqlite-worker.js:isOwnershipConflictError()` \u2192 `OWNERSHIP_CONFLICT` with a specific \"another tab/window of this app is already open\" message; Web Lock `fellows-relationships-folder-write` guards folder writes.",
+      "verification_text": "`tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock::test_lock_held_during_write_surfaces_failure_then_recovers`; `test_worker_spawn_failure.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock",
@@ -182,6 +211,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`build/build_pwa.py:compute_build_label()` \u2192 `<YYYY-MM-DD>-<short-sha>`, stamped into `app.js`/`sw.js`/`vendor/sqlite-worker.js` at build time; `app/server.py` substitutes the same at serve time.",
+      "verification_text": "`tests/test_build_pwa.py`; `tests/e2e/test_update_check.py`; `test_bug_report.py` (asserts `app: <YYYY-MM-DD>-<sha>`); `test_boot_beacon.py`",
       "refs": [
         {
           "ref": "tests/test_build_pwa.py",
@@ -211,6 +242,8 @@
       "status_text": "partial-conformance (conformant to the `mailto-only` axis pick; richer transports planned)",
       "conformant": false,
       "review_kind": false,
+      "realization": "Group/fellow export surfaces `mailto:` (+ `tel:`) (`app/static/app.js:renderGroupDetailPage`, `app/static/app.js:renderDetail`); the user picks per outreach; no transport is hardcoded as the sole option. Axis pick is `comms-transport-set: mailto-only` (Signal planned).",
+      "verification_text": "`tests/e2e/test_groups_export.py`; `tests/test_comms.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_groups_export.py",
@@ -230,6 +263,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": true,
+      "realization": "Canonical source: the **2026-04-08 Knack REST-API extraction of the EHF fellows directory** (515 records), archived before EHF's Knack SaaS shut down \u2014 all contact data derives from that one extraction. `build/restore_from_knack_scrapefile.py` maps every column to a Knack `field_*` (raw_dump fallback); no contact data introduced beyond the configured Knack source. Column-by-column mapping and recovery paths: [`./data_provenance.md`](./data_provenance.md).",
+      "verification_text": "`tests/test_database.py`; `build/diff_fellows_db.py` (bytewise vs `fellows.db.backup.2026-04-08`, via `just db-verify`); [`./data_provenance.md`](./data_provenance.md) (human review)",
       "refs": [
         {
           "ref": "tests/test_database.py",
@@ -245,10 +280,54 @@
       "findings": []
     },
     {
+      "id": "AC-22 (honest capability assessment)",
+      "status_text": "conformant",
+      "conformant": true,
+      "review_kind": false,
+      "realization": "The worker establishes OPFS durability by **probing the substrate, not a UA/feature string**: it attempts `installOpfsSAHPoolVfs()` and reports the real result as `opfsCapable` in the `init` handshake (`app/static/vendor/sqlite-worker.js:handlers.init`); the main thread reads that field and falls back to the `api+idb` provider, rendering the unsupported-browser panel (`app/static/app.js:renderLocalDataUnavailablePanel`) instead of UA-sniffing \u2014 UA parsing informs only the human-readable \"which browser version\" hint, never the capability gate. Honest *undetermined*: the update-check returns `status:'unsupported'` when it cannot compare; `?diag` reports each store's real presence/version. Realized via **RZ-2** (the RZ-2 realization, below).",
+      "verification_text": "`tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider`; `tests/e2e/test_worker_cold_start.py`",
+      "refs": [
+        {
+          "ref": "tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_worker_cold_start.py",
+          "status": "live",
+          "detail": ""
+        }
+      ],
+      "findings": []
+    },
+    {
+      "id": "AC-23 (source available for verification)",
+      "status_text": "conformant",
+      "conformant": true,
+      "review_kind": true,
+      "realization": "The `web-bundle-with-magic-link` flavor meets the **baseline** form \u2014 source published alongside the served artifact: the AC-15 build label `<YYYY-MM-DD>-<short-sha>` (`build/build_pwa.py:compute_build_label()`, substituted at build *and* serve time from `git HEAD`) names the exact source revision, and that revision **is** this public, GPL-3.0-licensed repo (`LICENSE`), so the running bundle can be mapped to source and inspected/rebuilt before it is trusted. Not the strong build-from-verifiable-source form (the user is not required to rebuild before first use \u2014 that is PRM's demonstrator); no opaque artifact.",
+      "verification_text": "`by construction` (the served build label resolves to this public repo's revision); `tests/test_build_pwa.py` (label\u2194sha derivation); `tests/e2e/test_update_check.py`",
+      "refs": [
+        {
+          "ref": "tests/test_build_pwa.py",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_update_check.py",
+          "status": "live",
+          "detail": ""
+        }
+      ],
+      "findings": []
+    },
+    {
       "id": "AC-18 (transports cannot read message contents)",
       "status_text": "conformant",
       "conformant": true,
       "review_kind": true,
+      "realization": "Only `mailto:` / `tel:` offered \u2014 no centralized SaaS message broker (Slack/Discord). `mailto:` hands to the user's client; MCP comms only stages a `mailto:` URL (`mcp_servers/comms.py:stage_email()`).",
+      "verification_text": "Architectural / human-review; `tests/test_comms.py` (stage-only, returns `mailto:` URL); `tests/test_private_data_ops.py` (`mode=ro`)",
       "refs": [
         {
           "ref": "tests/test_comms.py",
@@ -268,6 +347,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Group export panel (`app/static/app.js:renderGroupDetailPage`) shows recipients + subject + body + merged data before launch, editable/cancelable; bulk shows recipient count + warning.",
+      "verification_text": "`tests/e2e/test_groups_export.py`; `tests/e2e/test_groups_compose.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_groups_export.py",
@@ -287,6 +368,8 @@
       "status_text": "partial-conformance (cloud opt-in via per-install consent; per-call prompt visibility is the cloud client's UI, not the workspace's)",
       "conformant": false,
       "review_kind": false,
+      "realization": "Cloud-LLM use is opt-in via the `EX-CLOUD-LLM` exception (consent gate `app/static/app.js:recordMcpbConsent()` \u2192 non-PNA mode); a local model is the default green path. Per-call prompt + merged-data visibility lives in the cloud client's own UI (the user drives Claude Desktop).",
+      "verification_text": "`tests/e2e/test_pna_exception_mode.py`; `test_mcpb_settings.py`; see Exception attestation below",
       "refs": [
         {
           "ref": "tests/e2e/test_pna_exception_mode.py",
@@ -306,6 +389,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Directory-data refresh is an explicit About-page button only (`app/static/app.js:handleUpdateDirectoryDataClick`); boot is install-only and never background-polls.",
+      "verification_text": "`tests/e2e/test_directory_data_update_flow.py`; `test_versioned_fellows_db.py::test_install_only_does_not_refetch_on_sha_mismatch`",
       "refs": [
         {
           "ref": "tests/e2e/test_directory_data_update_flow.py",
@@ -325,6 +410,8 @@
       "status_text": "partial-conformance (per-session/per-install opt-in via `EX-CLOUD-LLM`; not per-call server-side gating)",
       "conformant": false,
       "review_kind": false,
+      "realization": "Realized as the `EX-CLOUD-LLM` exception: a workspace consent gate before the user wires up a cloud client + a persistent non-PNA-mode signal; `mcp_servers/private_data_ops.py` opens both DBs `mode=ro`. The stdio servers are not per-call gated by design (out-of-band from the workspace \u2014 see [`../plans/pna_toolkit_exceptions_contribution.md`](../plans/pna_toolkit_exceptions_contribution.md) open question).",
+      "verification_text": "`tests/e2e/test_pna_exception_mode.py`; `tests/test_private_data_ops.py` (`mode=ro`)",
       "refs": [
         {
           "ref": "tests/e2e/test_pna_exception_mode.py",
@@ -344,9 +431,16 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`mcp_servers/comms.py:stage_email()` returns a `mailto:` URL + payload preview and never fires a transport; the user's mail client launches it.",
+      "verification_text": "`tests/test_comms.py::test_stage_email_basic_to`, `tests/test_comms.py::test_stage_email_bcc_group_send`",
       "refs": [
         {
           "ref": "tests/test_comms.py::test_stage_email_basic_to",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/test_comms.py::test_stage_email_bcc_group_send",
           "status": "live",
           "detail": ""
         }
@@ -358,6 +452,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`deploy/server.py` ships no per-user RW endpoints; the dev server's retired `/api/groups` and `/api/settings` were the only ones that ever existed (Phase 1 cutover).",
+      "verification_text": "`tests/test_deploy_auth_round_trip.py::test_directory_api_is_403_without_session`; `test_deploy_sqlite_api.py`; `test_deploy_mcpb_routes.py`",
       "refs": [
         {
           "ref": "tests/test_deploy_auth_round_trip.py::test_directory_api_is_403_without_session",
@@ -378,10 +474,12 @@
       "findings": []
     },
     {
-      "id": "AC-3 (single OPFS owner)",
+      "id": "RZ-1 (single OPFS owner)",
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`app/static/vendor/sqlite-worker.js` is the sole context that calls `navigator.storage.getDirectory` or opens a `FileSystemSyncAccessHandle`. Durable SQL in a browser *forces* this worker-owned, cross-origin-isolated, single-connection architecture \u2014 a property of the medium accepted as the substrate's cost, not a defect. (PNT folded the former `CST-PWA-DURABLE-SQL-ARCH` constraint directly into RZ-1; the worker-owned-OPFS convention is the handling.)",
+      "verification_text": "`tests/e2e/test_worker_rpc.py`; `test_worker_cold_start.py`; `test_local_first_boot.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_worker_rpc.py",
@@ -406,9 +504,21 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Three-tier `window.__dataProvider` (`app/static/app.js:bootDirectoryAsApp`) hot-swaps `worker` \u2192 `api+idb` on 401/403 mid-boot; the cached directory stays readable. The tier-3 IndexedDB mirror is now persisted on **worker**-source boots too (not just api), so a worker-only install has a real fallback when the worker can't own OPFS (multi-tab conflict) *and* the session is stale \u2014 previously that compound case fell through to the email gate. When even tier 3 is empty, a multi-tab ownership conflict surfaces the actionable \"app open in another window\" panel, never the gate (re-auth can't release the OPFS lock). See [`./email_gate.md` \u00a7 Why an onboarded user can land on the email gate](./email_gate.md#why-an-onboarded-user-can-land-on-the-email-gate).",
+      "verification_text": "`tests/e2e/test_offline_only_mode.py::test_401_with_cached_data_shows_directory_from_cache`, `tests/e2e/test_offline_only_mode.py::test_onboarded_multitab_stale_session_shows_cached_directory_not_gate`, `tests/e2e/test_offline_only_mode.py::test_ownership_conflict_empty_cache_shows_panel_not_gate`; `test_search_offline_fallback.py`; `test_local_first_boot.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_offline_only_mode.py::test_401_with_cached_data_shows_directory_from_cache",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_offline_only_mode.py::test_onboarded_multitab_stale_session_shows_cached_directory_not_gate",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_offline_only_mode.py::test_ownership_conflict_empty_cache_shows_panel_not_gate",
           "status": "live",
           "detail": ""
         },
@@ -430,6 +540,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`deploy/server.py` auth endpoints return neutral payloads with per-IP rate limits (`deploy/magic_link_auth.py:check_rate_limit`); the `/api/client-errors` sink is sanitized (`deploy/client_error_sanitizer.py`). See [`./email_gate.md`](./email_gate.md).",
+      "verification_text": "`tests/test_magic_link_auth.py`; `test_deploy_auth_round_trip.py`; `test_deploy_client_errors.py`; `test_client_error_sanitizer.py`",
       "refs": [
         {
           "ref": "tests/test_magic_link_auth.py",
@@ -455,10 +567,12 @@
       "findings": []
     },
     {
-      "id": "AC-12 (capability detection inside worker)",
+      "id": "RZ-2 (capability detection inside worker)",
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Worker `init` (`app/static/vendor/sqlite-worker.js:handlers.init`) reports `opfsCapable`; the main thread reads the field and renders the unsupported-browser panel rather than UA-sniffing.",
+      "verification_text": "`tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider`; `test_worker_cold_start.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider",
@@ -474,11 +588,23 @@
       "findings": []
     },
     {
-      "id": "AC-13 (COOP/COEP required)",
+      "id": "RZ-3 (COOP/COEP required)",
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Both dev (`app/server.py:Handler.end_headers`) and prod (`deploy/server.py`) send `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: require-corp` and a strict CSP. Caddy preserves them at the edge.",
+      "verification_text": "`tests/test_api.py::TestSecurityHeaders::test_coop_coep_present`, `tests/test_api.py::TestSecurityHeaders::test_strict_csp_present`, `tests/test_api.py::TestSecurityHeaders::test_other_hardening_headers_present`",
       "refs": [
+        {
+          "ref": "tests/test_api.py::TestSecurityHeaders",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/test_api.py::TestSecurityHeaders",
+          "status": "live",
+          "detail": ""
+        },
         {
           "ref": "tests/test_api.py::TestSecurityHeaders",
           "status": "live",
@@ -488,10 +614,12 @@
       "findings": []
     },
     {
-      "id": "AC-14 (SW never owns SQLite)",
+      "id": "RZ-4 (SW never owns SQLite)",
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "`app/static/sw.js` is app-shell + update/signature only; `/fellows.db` is explicitly bypassed in the fetch handler.",
+      "verification_text": "`tests/e2e/test_sw_post_caching.py`; `test_image_cache_no_bust.py`",
       "refs": [
         {
           "ref": "tests/e2e/test_sw_post_caching.py",
@@ -511,6 +639,8 @@
       "status_text": "conformant for EX-H1\u2013H6 and EX-H8; EX-H7 (consent-to-human) surfaced best-effort via MCP `instructions`",
       "conformant": true,
       "review_kind": false,
+      "realization": "Workspace-side handler: consent gate in Settings before the user wires up the cloud client (`recordMcpbConsent()`); persistent dismissable \"Going rogue\" banner naming the exception via its `data-pna-exception` marker, \"cloud-AI exception\" detail, and explainer link (`syncNotAPnaBanner()`, `index.html`); in-app explainer `#/exception/EX-CLOUD-LLM` rendering the **per-dimension strength profile** (`PNA_EXCEPTION_STRENGTH` \u2192 `renderExceptionPage()`, EX-H8); \"Return to PNA mode\" control (`returnToPnaMode()`); `<body data-pna-mode/data-pna-exceptions>` machine-readable marker. **EX-H7** consent-to-human propagation is surfaced best-effort via the MCP `instructions` handshake on the data-returning servers (`CLOUD_LLM_PROPAGATION_NOTICE` in `mcp_servers/private_data_ops.py` + `mcp_servers/shared_data_ops.py`); servers stay `mode=ro`, not per-call gated. Code: `app/static/app.js`, `app/static/index.html`, `mcp_servers/`.",
+      "verification_text": "`tests/e2e/test_pna_exception_mode.py` (raise/dismiss/persist, banner\u2192explainer, return-to-PNA from explainer + Settings, explainer active/inactive/unknown, `test_explainer_shows_per_dimension_strength_profile`); `tests/e2e/test_mcpb_settings.py`; `tests/test_private_data_ops.py::test_instructions_carry_cloud_llm_propagation_notice`; `tests/test_shared_data_ops.py::test_instructions_carry_cloud_llm_propagation_notice`",
       "refs": [
         {
           "ref": "tests/e2e/test_pna_exception_mode.py",
@@ -540,6 +670,8 @@
       "status_text": "**conformant** (as a *handling*): the capability reduction is complete \u2014 UI/route reduction **plus** data-layer refusal of off-folder durable writes (worker-side load-bearing + page-side defense-in-depth, PR #244 `d2706a9`, extended in PR #261 to the restore/email-import path with a raw-RPC no-bypass proof; [`../plans/private_data_enforcement.md`](../plans/private_data_enforcement.md)). The negative invariant is now a hard guard, not a strict-xfail. Frontier stays **Open**: this is honest handling, not a durable cross-platform store.",
       "conformant": true,
       "review_kind": false,
+      "realization": "Private store **requires** a verified real file; absent one there is **no** private store (browse-only, not a degraded store). The timestamped `.db` export (`ehf-fellows-private-data-<date>.db`) is the honest **portability bridge** between installs, not a live store.",
+      "verification_text": "`tests/e2e/test_browse_only_durability.py::test_gate_defaults_to_browse_only_without_folder` (gate default); `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_create_group`, `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only`, `tests/e2e/test_private_data_enforcement.py::test_folder_attached_allows_create_group`, `tests/e2e/test_private_data_enforcement.py::test_permission_lapse_reduces_capability_then_reconnect_restores` (the gate keys off *live* folder permission \u2014 capability reduces on a permission lapse and restores on reconnect, so \"requires a verified file\" holds dynamically, not just at first attach); `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`, `tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc` (the #261 no-bypass guards: the restore/email-import path is refused, and the **worker itself** \u2014 not just the page \u2014 refuses every mutating RPC off-folder when driven through the raw worker `_rpc`, so the negative invariant is enforced at the data layer, not UI-only); `tests/e2e/test_private_data_enforcement.py::test_private_db_export_round_trips` (the `.db` portability bridge is a valid, re-importable export \u2014 proven, not just asserted); `browser_support.md` probe; `feature_platform_matrix.md` matrix",
       "refs": [
         {
           "ref": "tests/e2e/test_browse_only_durability.py::test_gate_defaults_to_browse_only_without_folder",
@@ -589,6 +721,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "A verified folder dissolves the sandbox boundary \u2014 `relationships.db` becomes a real file the user's other tools (MCP `private_data_ops`, backups, CLIs) read directly. **Off-folder there is no folder-resident private store** for an external tool to read: the durable-write guard (#244) means no canonical `relationships.db` exists off-folder, so the OPFS slot stays sealed and invisible. The Claude Desktop setup flow does **not** hide MCP off-folder \u2014 `shared_data_ops` legitimately reads the on-device `fellows.db` \u2014 but it surfaces a folder warning naming that the *private* bundle needs a connected folder (or a `.db` export). So off-folder it is the *private* store's external readability that is bounded, handled honestly, not the whole affordance.",
+      "verification_text": "`tests/e2e/test_sandbox_sealed_mcp.py::test_no_folder_resident_private_store_off_folder`, `tests/e2e/test_sandbox_sealed_mcp.py::test_mcp_setup_warns_no_folder_off_folder`, `tests/e2e/test_sandbox_sealed_mcp.py::test_mcp_folder_warning_hidden_when_folder_attached`; `use_with_claude_desktop.md`",
       "refs": [
         {
           "ref": "tests/e2e/test_sandbox_sealed_mcp.py::test_no_folder_resident_private_store_off_folder",
@@ -613,6 +747,8 @@
       "status_text": "**conformant** (as a handling): settings/prefs are localStorage-only off-folder (`test_off_folder_settings_are_empty`, a hard guard; #248 closed the identity-metadata residual). The relationships residual \u2014 rows hydrated into OPFS during a folder session linger after the handle drops \u2014 is **mitigated, not avoided**: the migration banner surfaces it for the user to move onto disk, and acting on the prompt completes the OPFS\u2192folder migration (`test_stranded_opfs_groups_fire_migration_prompt`, `test_stranded_opfs_groups_migrate_into_freshly_picked_folder`). The earlier \"Avoided \u2026 in its strongest reading\" was an over-claim for the post-folder-lapse path, corrected here (Framing A). A future stronger handling could clear the OPFS buffer *after* a verified migration \u2014 never before.",
       "conformant": true,
       "review_kind": false,
+      "realization": "**Mixed \u2014 settings *avoided*, relationships *mitigated*.** The prefs (`has_email_only`/`self_email`) and workspace-identity metadata never reach OPFS off-folder (localStorage-only; identity minted only on the first canonical folder write). But relationships rows the worker *hydrated* into OPFS during a folder session **linger** there after the handle drops (Lock, or the `no-handle` a real OS returns post-restart) \u2014 durable private data in evictable storage, which a bare \"Avoided\" over-claimed. Handling: a dedicated **migration banner** (naming the count \u2014 \"Save your N saved groups \u2192 *Save my groups*\") surfaces the stranded OPFS data and nudges the user to move it onto disk before the browser can evict it \u2014 never silently left, never wiped (wiping would be data loss).",
+      "verification_text": "`tests/e2e/test_private_data_enforcement.py::test_prefs_stay_localstorage_only_off_folder`; `tests/e2e/test_private_data_enforcement.py::test_off_folder_settings_are_empty`; `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes` (the restore/email-import path can't land a durable private store in evictable OPFS off-folder either \u2014 #261 closed this leak at the worker); `tests/e2e/test_private_data_enforcement.py::test_folder_file_on_disk_carries_identity` (byte-level: folder mode's durable home is the on-disk file, opened back as a real SQLite DB \u2014 not evictable OPFS); `tests/e2e/test_private_data_enforcement.py::test_stranded_opfs_groups_fire_migration_prompt`, `tests/e2e/test_private_data_enforcement.py::test_clean_no_folder_shows_generic_nudge_not_migrate` (the migration banner fires for stranded OPFS rows and not for a clean install), `tests/e2e/test_private_data_enforcement.py::test_stranded_opfs_groups_migrate_into_freshly_picked_folder` (and acting on the prompt *completes* the migration \u2014 stranded groups are copied into the freshly-picked folder file and the gate reopens); `persistence_and_upgrades.md` state-survival table (browse-only = localStorage-only)",
       "refs": [
         {
           "ref": "tests/e2e/test_private_data_enforcement.py::test_prefs_stay_localstorage_only_off_folder",
@@ -657,6 +793,8 @@
       "status_text": "conformant: canonical-copy disambiguation shipped (durably on disk, verified byte-level); sync explicitly out of scope",
       "conformant": true,
       "review_kind": false,
+      "realization": "Origin/device-local silos, no built-in portability. The in-db **workspace identity** (`workspace_uuid` + monotonic `write_generation` + `device_label` in the `settings` table) answers \"which copy is canonical?\" for the content-previewed re-pick chooser; the `.db` export is the manual cross-device bridge.",
+      "verification_text": "`tests/e2e/test_user_folder_storage.py` (reconnect/chooser); `tests/e2e/test_folder_probe.py` (identity stamp); `tests/e2e/test_private_data_enforcement.py::test_folder_file_on_disk_carries_identity`, `tests/e2e/test_private_data_enforcement.py::test_folder_backup_on_disk_carries_identity` (byte-level: the canonical-copy identity + monotonic `write_generation` the chooser ranks by are durably in the folder file *and* its backup ring); `tests/e2e/test_private_data_enforcement.py::test_private_db_export_round_trips` (the manual cross-device `.db` bridge is a valid, re-importable export)",
       "refs": [
         {
           "ref": "tests/e2e/test_user_folder_storage.py",
@@ -691,6 +829,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "Multi-tab contention with no OS file lock \u2192 Web Locks + ownership-conflict detection guard the canonical folder write.",
+      "verification_text": "`tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock` (folder-write lock)",
       "refs": [
         {
           "ref": "tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock",
@@ -705,6 +845,8 @@
       "status_text": "conformant: opportunistic-only, honestly framed",
       "conformant": true,
       "review_kind": true,
+      "realization": "No reliable scheduled background execution (esp. iOS) \u2192 backups are opportunistic: a per-boot debounced snapshot in folder mode, never a scheduled promise.",
+      "verification_text": "`tests/e2e/test_user_folder_storage.py` (per-boot snapshot); `code inspection` (debounce cadence); `persistence_and_upgrades.md` \u00a7 Auto-backup",
       "refs": [
         {
           "ref": "tests/e2e/test_user_folder_storage.py",
@@ -719,6 +861,8 @@
       "status_text": "conformant by bounding",
       "conformant": true,
       "review_kind": true,
+      "realization": "Needs an origin + TLS + secure context; true serverless-local is unreachable. Bounded to distribution/update only (Never-SaaS) \u2014 no per-user RW state on the server.",
+      "verification_text": "`never-saas.md`; `email_gate.md`",
       "refs": [],
       "findings": []
     },
@@ -727,9 +871,21 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc`, `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only`, `tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`",
       "refs": [
         {
           "ref": "tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes",
           "status": "live",
           "detail": ""
         }
@@ -741,6 +897,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/test_private_data_ops.py::test_read_only_enforcement`; `tests/test_comms.py::test_stage_email_basic_to`, `tests/test_comms.py::test_stage_email_bcc_group_send`",
       "refs": [
         {
           "ref": "tests/test_private_data_ops.py::test_read_only_enforcement",
@@ -749,6 +907,11 @@
         },
         {
           "ref": "tests/test_comms.py::test_stage_email_basic_to",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/test_comms.py::test_stage_email_bcc_group_send",
           "status": "live",
           "detail": ""
         }
@@ -760,6 +923,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file`; `tests/e2e/test_groups_compose.py`; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index`",
       "refs": [
         {
           "ref": "tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file",
@@ -784,9 +949,21 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc`, `tests/e2e/test_private_data_enforcement.py::test_folder_attached_allows_create_group`, `tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only`",
       "refs": [
         {
           "ref": "tests/e2e/test_private_data_enforcement.py::test_worker_is_load_bearing_off_folder_via_raw_rpc",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_private_data_enforcement.py::test_folder_attached_allows_create_group",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_private_data_enforcement.py::test_no_durable_private_write_when_browse_only",
           "status": "live",
           "detail": ""
         }
@@ -798,9 +975,16 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/test_comms.py::test_stage_email_basic_to`, `tests/test_comms.py::test_stage_email_bcc_group_send`; `tests/e2e/test_groups_compose.py`",
       "refs": [
         {
           "ref": "tests/test_comms.py::test_stage_email_basic_to",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/test_comms.py::test_stage_email_bcc_group_send",
           "status": "live",
           "detail": ""
         },
@@ -817,6 +1001,8 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file`; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index`",
       "refs": [
         {
           "ref": "tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file",
@@ -836,9 +1022,16 @@
       "status_text": "conformant",
       "conformant": true,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "`tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel`, `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap`",
       "refs": [
         {
           "ref": "tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel",
+          "status": "live",
+          "detail": ""
+        },
+        {
+          "ref": "tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap",
           "status": "live",
           "detail": ""
         }
@@ -850,6 +1043,8 @@
       "status_text": "partial-conformance (UM-1 + UM-2 hold; UM-3 legibility weaker than AC-10 \u2014 frontier [#259](https://github.com/richbodo/fellows_local_db/issues/259))",
       "conformant": false,
       "review_kind": false,
+      "realization": "",
+      "verification_text": "**UM-1 + UM-2 hold:** off-folder the restore is refused at the worker (`tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`); the picker stages, the worker applies. **UM-3 gap:** in folder mode the dispose surface shows only a row-count delta \u2014 weaker \"what is changing\" legibility than AC-10's per-member orphan preview.",
       "refs": [
         {
           "ref": "tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes",

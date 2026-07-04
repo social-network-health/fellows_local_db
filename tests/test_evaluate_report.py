@@ -50,10 +50,49 @@ def test_top_level_shape():
     report = _report()
     assert report["report_schema_version"] == "0.1"
     cand = report["candidate"]
-    assert cand["pna_spec_version"] == "0.1"
+    assert cand["pna_spec_version"] == "0.2"
     assert cand["picks_source"] == "declared"
     assert cand["commit"] == _FIXED_COMMIT
     assert cand["axis_picks"]["distribution"] == "web-bundle-with-magic-link"
+
+
+def test_rz_rows_emit_under_retired_legacy_ids():
+    """The v0.2 RZ-* realization rows must appear in the report — the render
+    contract is AC-keyed, so they emit under their retired legacy AC ids (the
+    same convention PNT's vendored prm report uses), with evidence naming the
+    RZ id so the v0.2 identity is not lost. Before this, RZ-1..4 were silently
+    DROPPED from the findings — the exact failure mode the fail-loud partition
+    now forbids."""
+    report = _report()
+    by_ac = {f["ac_id"]: f for f in report["findings"]}
+    for rz, legacy in er.RETIRED_RZ_TO_AC.items():
+        assert legacy in by_ac, "{} ({}) missing from findings".format(legacy, rz)
+        assert rz in json.dumps(by_ac[legacy]), \
+            "{} does not name its v0.2 id {}".format(legacy, rz)
+    # RZ-5 is fellows-not-applicable (opfs substrate) and carries a rationale.
+    assert by_ac["AC-PRM-C"]["status"] == "not-applicable"
+    assert by_ac["AC-PRM-C"]["rationale"]
+
+
+def test_unmapped_rz_row_fails_loudly(monkeypatch):
+    """An RZ row RETIRED_RZ_TO_AC doesn't cover must RAISE, not vanish."""
+    trimmed = {k: v for k, v in er.RETIRED_RZ_TO_AC.items() if k != "RZ-1"}
+    monkeypatch.setattr(er, "RETIRED_RZ_TO_AC", trimmed)
+    with pytest.raises(ValueError, match="RETIRED_RZ_TO_AC"):
+        er.build_evaluate_report(commit=_FIXED_COMMIT)
+
+
+def test_ac17_finding_carries_the_provenance_story():
+    """AC-17 (mirrored data is sourced) must be legible from the report alone:
+    its evidence carries the Realization prose naming the ultimate source (the
+    2026-04-08 Knack extraction) and the data_provenance.md human-review
+    artifact — not just two bare test-file paths."""
+    report = _report()
+    ac17 = next(f for f in report["findings"] if f["ac_id"] == "AC-17")
+    blob = json.dumps(ac17["evidence"])
+    assert "Knack" in blob
+    assert "2026-04-08" in blob
+    assert "data_provenance.md" in blob
 
 
 def test_every_finding_keys_by_ac_and_meets_status_rules():

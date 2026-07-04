@@ -63,12 +63,14 @@ def test_markdown_links_rows_to_pnt():
     md = cr.render_md(report)
     assert "/spec/PNA_Spec.md#ac-1" in md          # universal AC
     assert "/spec/constraints.md#cst-" in md        # a constraint
-    # Flavor-derived ACs resolve to axes.md, not PNA_Spec.md.
-    assert "/spec/axes.md#ac-13" in md
+    # Flavor-derived ACs and the v0.2 RZ realizations resolve to axes.md.
+    assert "/spec/axes.md#ac-5" in md
+    assert "/spec/axes.md#rz-" in md
 
 
 def test_anchor_url_routing():
     assert cr.pnt_anchor_url("AC-1 (two-store)").endswith("PNA_Spec.md#ac-1")
     assert cr.pnt_anchor_url("AC-13 (coop/coep)").endswith("axes.md#ac-13")
+    assert cr.pnt_anchor_url("RZ-3 (COOP/COEP required)").endswith("axes.md#rz-3")
     assert cr.pnt_anchor_url("CST-PWA-SANDBOX-SEALED").endswith("constraints.md#cst-pwa-sandbox-sealed")
     assert cr.pnt_anchor_url("EX-CLOUD-LLM").endswith("exceptions.md#ex-cloud-llm")
