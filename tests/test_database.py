@@ -192,3 +192,51 @@ def test_slug_never_falls_back_to_record_id(db):
         "Slugs equal to record_id (importer fallback exhausted): "
         + ", ".join(f"{rid}" for rid, _ in rows[:5])
     )
+
+
+# --- In-band provenance chain (AC-17) ----------------------------------------
+# Content assertions against the real built DB. The hermetic ETL-level tests
+# (sha-over-parsed-bytes, determinism, diff-tool tolerance) live in
+# tests/test_etl_provenance.py; a rebuilt app/fellows.db must also carry the
+# expected chain, which is what a downstream importer (another PNA, an MCP
+# client) will actually read.
+
+
+def test_provenance_table_has_two_hops(db):
+    """The build stamps exactly the two-hop chain: source, then this pipeline."""
+    rows = db.execute("SELECT hop FROM provenance ORDER BY hop").fetchall()
+    assert [r[0] for r in rows] == [0, 1]
+
+
+def test_provenance_hop0_names_knack_source(db):
+    """Hop 0 is the ultimate source: the 2026-04-08 Knack REST-API extraction,
+    with the scrapefile's sha256 riding along for artifact integrity."""
+    row = db.execute(
+        "SELECT system, artifact, artifact_sha256, acquired_at, method "
+        "FROM provenance WHERE hop = 0"
+    ).fetchone()
+    assert row is not None
+    system, artifact, sha, acquired_at, method = row
+    assert system == "EHF Fellows Directory (Knack)"
+    assert artifact  # names the scrapefile
+    import re as _re
+    assert sha and _re.fullmatch(r"[0-9a-f]{64}", sha)
+    assert acquired_at == "2026-04-08"
+    assert method == "Knack REST API extraction"
+
+
+def test_provenance_hop1_has_no_volatile_values(db):
+    """Hop 1 (this pipeline) must carry no per-build volatile values — no
+    wall-clock date, no self-hash — so rebuilds stay deterministic and
+    fellows_db_sha doesn't churn per code commit."""
+    row = db.execute(
+        "SELECT system, artifact, artifact_sha256, acquired_at, method "
+        "FROM provenance WHERE hop = 1"
+    ).fetchone()
+    assert row is not None
+    system, artifact, sha, acquired_at, method = row
+    assert system == "fellows_local_db"
+    assert artifact == "fellows.db"
+    assert sha is None
+    assert acquired_at is None
+    assert method == "build/restore_from_knack_scrapefile.py"

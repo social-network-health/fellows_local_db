@@ -4,7 +4,7 @@
   "candidate": {
     "name": "fellows_local_db",
     "repo_url": "https://github.com/richbodo/fellows_local_db",
-    "commit": "fede3fc3b61d66aff7d012edc2467040726075bc",
+    "commit": "03294cadebfbc71fae5805b15a419d2458905e4d",
     "pna_spec_version": "0.2",
     "picks_source": "declared",
     "axis_picks": {
@@ -315,7 +315,19 @@
       "status": "conformant",
       "citations": [
         {
-          "path": "tests/test_database.py"
+          "path": "tests/test_database.py",
+          "note": "cited test: test_provenance_table_has_two_hops"
+        },
+        {
+          "path": "tests/test_database.py",
+          "note": "cited test: test_provenance_hop0_names_knack_source"
+        },
+        {
+          "path": "tests/test_database.py",
+          "note": "cited test: test_provenance_hop1_has_no_volatile_values"
+        },
+        {
+          "path": "tests/test_etl_provenance.py"
         },
         {
           "path": "build/diff_fellows_db.py"
@@ -324,16 +336,16 @@
       "evidence": [
         {
           "source": "human",
-          "detail": "Realization (docs/Architecture.md): Canonical source: the 2026-04-08 Knack REST-API extraction of the EHF fellows directory (515 records), archived before EHF's Knack SaaS shut down — all contact data derives from that one extraction. build/restore_from_knack_scrapefile.py maps every column to a Knack field_* (raw_dump fallback); no contact data introduced beyond the configured Knack source. Column-by-column mapping and recovery paths: ./data_provenance.md."
+          "detail": "Realization (docs/Architecture.md): Canonical source: the 2026-04-08 Knack REST-API extraction of the EHF fellows directory (515 records), archived before EHF's Knack SaaS shut down — all contact data derives from that one extraction. build/restore_from_knack_scrapefile.py maps every column to a Knack field_* (raw_dump fallback); no contact data introduced beyond the configured Knack source. The provenance travels in-band: the build stamps a provenance table inside fellows.db itself (hop 0 = the Knack extraction incl. the scrapefile's sha256; hop 1 = this build pipeline; no per-build volatile values, so rebuilds stay deterministic) — a downstream importer preserves the hops and appends its own. Column-by-column mapping and recovery paths: ./data_provenance.md."
         },
         {
           "source": "deterministic",
           "tool": "conformance-attestation-gate",
-          "detail": "Attestation gate (scripts/conformance_lib.py) resolved 2 cited test ref(s), all non-deferred: tests/test_database.py -> live; build/diff_fellows_db.py -> live. Static existence + marker-state only — pass/fail is enforced by the suite (`just test`)."
+          "detail": "Attestation gate (scripts/conformance_lib.py) resolved 5 cited test ref(s), all non-deferred: tests/test_database.py::test_provenance_table_has_two_hops -> live; tests/test_database.py::test_provenance_hop0_names_knack_source -> live; tests/test_database.py::test_provenance_hop1_has_no_volatile_values -> live; tests/test_etl_provenance.py -> live; build/diff_fellows_db.py -> live. Static existence + marker-state only — pass/fail is enforced by the suite (`just test`)."
         },
         {
           "source": "human",
-          "detail": "docs/Architecture.md declares a non-test verification kind for this row; its Verification cell reads: tests/test_database.py; build/diff_fellows_db.py (bytewise vs fellows.db.backup.2026-04-08, via just db-verify); ./data_provenance.md (human review)"
+          "detail": "docs/Architecture.md declares a non-test verification kind for this row; its Verification cell reads: tests/test_database.py::test_provenance_table_has_two_hops, tests/test_database.py::test_provenance_hop0_names_knack_source, tests/test_database.py::test_provenance_hop1_has_no_volatile_values; tests/test_etl_provenance.py (hermetic: hop-0 sha over exact parsed bytes, byte-deterministic rebuild, diff-tool tolerance); build/diff_fellows_db.py (column-exact fellows-table diff vs fellows.db.backup.2026-04-08, via just db-verify); ./data_provenance.md (human review)"
         }
       ]
     },

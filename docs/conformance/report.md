@@ -16,7 +16,7 @@ Every conformance claim this app makes is backed by live, executable evidence, a
 
 → To complete the determination (🟡 → 🟢), run the spec's audit flow: **[PNT User's Guide → Audit a candidate PNA](https://github.com/richbodo/personal_network_toolkit/blob/main/docs/users-guide.md#goal-2--audit-a-candidate-pna-before-installing-it)**.
 
-_Generated 2026-07-04T11:44:51Z for `fede3fc`. Source of truth: [`docs/Architecture.md`](../Architecture.md)._
+_Generated 2026-07-04T11:51:46Z for `03294ca`. Source of truth: [`docs/Architecture.md`](../Architecture.md)._
 
 **What the IDs mean** — [**AC**](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md) Architectural Commitment (a rule every safe PNA honors) · [**CST**](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/constraints.md) Constraint (a platform limit handled honestly, not hidden) · [**EX**](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/exceptions.md) Exception (a declared departure from PNA rules).
 
@@ -47,7 +47,7 @@ Each row's ID links to its definition in the PNT spec. Status is summarized; eac
 | [AC-11 (concurrent-access detection)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-11) | conformant | `tests/e2e/test_user_folder_storage.py::TestPhase2WriteLock` → live; `test_worker_spawn_failure.py` → live |
 | [AC-15 (build label tied to source revision)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-15) | conformant | `tests/test_build_pwa.py` → live; `tests/e2e/test_update_check.py` → live; `test_bug_report.py` → live; `test_boot_beacon.py` → live |
 | [AC-16 (user-driven transport selection)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-16) | partial-conformance | `tests/e2e/test_groups_export.py` → live; `tests/test_comms.py` → live |
-| [AC-17 (mirrored data is sourced)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-17) | conformant | `tests/test_database.py` → live; `build/diff_fellows_db.py` → live |
+| [AC-17 (mirrored data is sourced)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-17) | conformant | `tests/test_database.py::test_provenance_table_has_two_hops` → live; `tests/test_database.py::test_provenance_hop0_names_knack_source` → live; `tests/test_database.py::test_provenance_hop1_has_no_volatile_values` → live; `tests/test_etl_provenance.py` → live; `build/diff_fellows_db.py` → live |
 | [AC-22 (honest capability assessment)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-22) | conformant | `tests/e2e/test_unsupported_browser.py::test_no_sah_falls_back_to_api_idb_provider` → live; `tests/e2e/test_worker_cold_start.py` → live |
 | [AC-23 (source available for verification)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-23) | conformant | `tests/test_build_pwa.py` → live; `tests/e2e/test_update_check.py` → live |
 | [AC-18 (transports cannot read message contents)](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/PNA_Spec.md#ac-18) | conformant | `tests/test_comms.py` → live; `tests/test_private_data_ops.py` → live |
@@ -141,7 +141,7 @@ Group/fellow export surfaces `mailto:` (+ `tel:`) (`app/static/app.js:renderGrou
 <details>
 <summary><b>AC-17 (mirrored data is sourced)</b> — conformant</summary>
 
-Canonical source: the **2026-04-08 Knack REST-API extraction of the EHF fellows directory** (515 records), archived before EHF's Knack SaaS shut down — all contact data derives from that one extraction. `build/restore_from_knack_scrapefile.py` maps every column to a Knack `field_*` (raw_dump fallback); no contact data introduced beyond the configured Knack source. Column-by-column mapping and recovery paths: [`./data_provenance.md`](./data_provenance.md).
+Canonical source: the **2026-04-08 Knack REST-API extraction of the EHF fellows directory** (515 records), archived before EHF's Knack SaaS shut down — all contact data derives from that one extraction. `build/restore_from_knack_scrapefile.py` maps every column to a Knack `field_*` (raw_dump fallback); no contact data introduced beyond the configured Knack source. The provenance travels **in-band**: the build stamps a `provenance` table inside `fellows.db` itself (hop 0 = the Knack extraction incl. the scrapefile's sha256; hop 1 = this build pipeline; no per-build volatile values, so rebuilds stay deterministic) — a downstream importer preserves the hops and appends its own. Column-by-column mapping and recovery paths: [`./data_provenance.md`](./data_provenance.md).
 
 </details>
 <details>

@@ -70,9 +70,11 @@ Export them or inline: `FELLOWS_BASE_URL=https://staging.example.com just smoke`
 - **`db-rebuild`** — canonical rebuild from `final_fellows_set/knack_api_detail_dump.json`,
   **automatically snapshotting** to `backup/` first (via `data-backup`
   dependency). Prints row/email/image counts when done.
-- **`db-verify`** — bytewise-diff `app/fellows.db` against
+- **`db-verify`** — column-exact fellows-table diff of `app/fellows.db` against
   `app/fellows.db.backup.2026-04-08` (the reference known-good DB). Expected
-  output: `✓ bytewise match on all columns`.
+  output: `✓ column-exact match on all fellows columns`. (Logical diff of the
+  `fellows` table only — the `provenance` table and `has_image`, which postdate
+  the frozen backup, don't fail it.)
 - **`db-diff OTHER`** — same, but against any file you pass.
 - **`db-stats`** — row count, email count, image count. Quick sanity check.
 - **`db-open`** — open `app/fellows.db` in `sqlite3` for ad-hoc queries.

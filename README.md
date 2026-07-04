@@ -267,7 +267,7 @@ pytest tests/e2e/ -v                         # Playwright e2e
 ```bash
 just db-rebuild         # canonical Knack rebuild, auto-backup first, prints row counts
 just db-stats           # row / email / image counts
-just db-verify          # bytewise-diff vs app/fellows.db.backup.2026-04-08
+just db-verify          # column-exact fellows-table diff vs app/fellows.db.backup.2026-04-08
 just db-open            # open app/fellows.db in sqlite3
 ```
 

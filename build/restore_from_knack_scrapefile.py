@@ -27,6 +27,7 @@ in the 2026-04-08 scrape. The accompanying ``build/diff_fellows_db.py``
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -41,6 +42,18 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DB_PATH = REPO_ROOT / "app" / "fellows.db"
 IMAGES_DIR_SOURCE = REPO_ROOT / "final_fellows_set" / "fellow_profile_images_by_name"
 IMAGES_DIR_APP = REPO_ROOT / "app" / "fellow_profile_images_by_name"
+
+# In-band provenance chain (AC-17). Hop 0 is the ultimate source of every
+# fellows row: the one-time Knack REST-API extraction of the EHF fellows
+# directory, made before the Knack SaaS shut down (docs/data_provenance.md).
+# The date belongs to the SOURCE, not the build — hop rows must contain no
+# per-build volatile values (no wall-clock, no git sha), so a rebuild from the
+# same scrapefile is byte-deterministic and `fellows_db_sha` (the opt-in
+# update-availability signal) does not churn per code commit. Overridable via
+# --source-acquired-at for a future re-scrape of a different vintage.
+SOURCE_ACQUIRED_AT = "2026-04-08"
+SOURCE_SYSTEM = "EHF Fellows Directory (Knack)"
+SOURCE_METHOD = "Knack REST API extraction"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Field provenance. Each tuple: (db_column_or_extra_json_key, knack_field_id,
@@ -470,6 +483,16 @@ def main(argv: list[str] | None = None) -> int:
         default=str(DB_PATH),
         help=f"Output DB path (default: {DB_PATH}).",
     )
+    ap.add_argument(
+        "--source-acquired-at",
+        default=SOURCE_ACQUIRED_AT,
+        help=(
+            "Date the scrapefile was extracted from the source system "
+            f"(provenance hop 0 'acquired_at'; default: {SOURCE_ACQUIRED_AT}). "
+            "Set this when importing a scrape of a different vintage so the "
+            "in-band provenance doesn't carry the wrong date."
+        ),
+    )
     args = ap.parse_args(argv)
 
     src = Path(args.scrapefile)
@@ -477,8 +500,11 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Scrapefile not found: {src}", file=sys.stderr)
         return 1
 
-    with open(src, "r", encoding="utf-8") as f:
-        detail = json.load(f)
+    # Read the source bytes once and hash exactly what gets parsed, so the
+    # provenance hop-0 artifact_sha256 is provably the sha of this build's input.
+    raw_bytes = src.read_bytes()
+    source_sha256 = hashlib.sha256(raw_bytes).hexdigest()
+    detail = json.loads(raw_bytes.decode("utf-8"))
     if not isinstance(detail, dict):
         print(f"Expected dict-of-records at top level; got {type(detail).__name__}", file=sys.stderr)
         return 1
@@ -537,6 +563,44 @@ def main(argv: list[str] | None = None) -> int:
         )
     """)
     conn.execute("CREATE UNIQUE INDEX idx_fellows_slug ON fellows(slug)")
+
+    # In-band provenance chain (AC-17): travels inside the DB file itself, so
+    # any downstream consumer (another PNA importing this data, an MCP client,
+    # a raw /fellows.db download) can read where the data ultimately came from.
+    # hop 0 = the ultimate source; an ingesting application appends its own hop
+    # and preserves the ones before it. Entries are attested claims by the
+    # exporting application, not cryptographic proofs; artifact_sha256 gives
+    # per-hop artifact integrity. hop 1's artifact_sha256 is NULL by necessity
+    # (a DB cannot contain its own hash) — /build-meta.json's fellows_db_sha
+    # carries it transport-side, and importers compute it at ingest.
+    conn.execute("""
+        CREATE TABLE provenance (
+            hop INTEGER PRIMARY KEY,
+            system TEXT NOT NULL,
+            artifact TEXT,
+            artifact_sha256 TEXT,
+            acquired_at TEXT,
+            method TEXT,
+            note TEXT
+        )
+    """)
+    conn.execute(
+        "INSERT INTO provenance (hop, system, artifact, artifact_sha256, acquired_at, method, note) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (0, SOURCE_SYSTEM, src.name, source_sha256, args.source_acquired_at,
+         SOURCE_METHOD,
+         "One-time archive of the EHF fellows directory before its Knack SaaS "
+         "shut down; see docs/data_provenance.md."),
+    )
+    conn.execute(
+        "INSERT INTO provenance (hop, system, artifact, artifact_sha256, acquired_at, method, note) "
+        "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (1, "fellows_local_db", "fellows.db", None, None,
+         "build/restore_from_knack_scrapefile.py",
+         "Column mapping from Knack field_* ids documented in "
+         "build/restore_from_knack_scrapefile.py (KNACK_FIELD_MAP) and "
+         "docs/data_provenance.md."),
+    )
 
     image_index = build_image_index()
 

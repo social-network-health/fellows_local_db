@@ -42,16 +42,48 @@ The script:
 1. Reads the detail dump (dict keyed by `record_id`).
 2. Reads `knack_api_raw_dump.json` alongside it (automatic) for fields the
    detail dump lacks.
-3. Writes `app/fellows.db` with the canonical 18-column schema + an FTS5 index.
+3. Writes `app/fellows.db` with the canonical 18-column schema + an FTS5 index
+   + the in-band `provenance` table (below).
 4. Prints counts so you can sanity-check (515 / 515 / 251 at time of writing).
 
-To verify bytewise equivalence against the reference backup:
+To verify the fellows-table content against the reference backup:
 
 ```bash
 just db-verify
 ```
 
-Under the hood: `python build/diff_fellows_db.py app/fellows.db app/fellows.db.backup.2026-04-08`. Expected: `✓ bytewise match on all columns`. Use `just db-diff OTHER` to compare against any other DB file.
+Under the hood: `python build/diff_fellows_db.py app/fellows.db app/fellows.db.backup.2026-04-08`. Expected: `✓ column-exact match on all fellows columns`. Use `just db-diff OTHER` to compare against any other DB file. (The comparison is a **logical per-column diff of the `fellows` table** — not a byte comparison of the files — which is what lets the frozen reference backup, which predates both `has_image` and the `provenance` table, keep verifying fresh builds; the diff output notes each side's provenance chain informationally.)
+
+## In-band provenance (the `provenance` table)
+
+Every build stamps a small `provenance` table **inside `fellows.db` itself**, so
+the answer to "where did this data ultimately come from?" travels with the data
+— into the raw `/fellows.db` download, the PWA's OPFS copy, and any downstream
+application that imports the file (e.g. a Personal Relationship Manager
+ingesting this directory):
+
+| hop | system | artifact | acquired_at | method |
+|---|---|---|---|---|
+| 0 | EHF Fellows Directory (Knack) | `knack_api_detail_dump.json` (+ its sha256) | 2026-04-08 | Knack REST API extraction |
+| 1 | fellows_local_db | `fellows.db` | — | `build/restore_from_knack_scrapefile.py` |
+
+Design rules:
+
+- **Hop 0 is the ultimate source.** An application that imports this DB should
+  *preserve* the existing hops and *append its own* — that is how "this contact
+  came from the EHF fellows directory, archived from Knack on 2026-04-08"
+  survives a second import.
+- **Entries are attested claims, not proofs.** Each hop is a self-declaration
+  by the application that wrote it; `artifact_sha256` gives per-hop artifact
+  integrity (hop 0's is the sha256 of the exact scrapefile bytes parsed).
+  Hop 1's `artifact_sha256` is NULL by necessity — a DB cannot contain its own
+  hash; `/build-meta.json`'s `fellows_db_sha` carries it transport-side and
+  importers compute it at ingest.
+- **No per-build volatile values.** Hop rows carry the *source's* dates, never
+  wall-clock build time or git SHA — so a rebuild from the same scrapefile is
+  deterministic and `fellows_db_sha` (the opt-in update-availability signal)
+  doesn't churn per code commit. A re-scrape of a different vintage sets
+  `--source-acquired-at`.
 
 ## Column-by-column provenance
 
@@ -158,7 +190,7 @@ Three recovery paths, in order of safety:
    just db-rebuild
    # under the hood: python build/restore_from_knack_scrapefile.py
    ```
-   Produces the same DB as the Apr 8 backup, bytewise (verify with
+   Produces the same fellows-table content as the Apr 8 backup (verify with
    `just db-verify`).
 
 ## Historical note: the `.bak` JSON
