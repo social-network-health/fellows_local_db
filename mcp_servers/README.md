@@ -47,6 +47,10 @@ Important — Cloud LLMs touching Private data: see *Cloud LLM caveat*
 below. The short version is **wire these up to a local model** when
 possible.
 
+For the user-facing, illustrated version of this whole privacy model —
+consent gate, banner, strength profile, and all — see
+[`docs/explainers/external-access-and-ai-walkthrough.md`](../docs/explainers/external-access-and-ai-walkthrough.md).
+
 ## Prerequisites
 
 - `fellows.db` built locally (`just db-rebuild` from the repo root, or

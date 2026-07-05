@@ -24,6 +24,12 @@ window in your mail app.
 
 This is optional. The Fellows app works perfectly well without it.
 
+> **Want to understand the privacy model before (or instead of) setting
+> this up?** Read the illustrated
+> [External access & AI walkthrough](explainers/external-access-and-ai-walkthrough.md)
+> — what ever touches a network, what an AI can see, what it can change
+> (nothing), and what every consent screen in this guide actually does.
+
 The end game here is to build a native app with local AI capabilities, but that is not yet even on the roadmap.
 
 ---
