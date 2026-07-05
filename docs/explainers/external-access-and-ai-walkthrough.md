@@ -122,9 +122,8 @@ model** (once sent to a cloud provider, no app can guarantee what happens to it)
 are young** (the extensions are read-only and auditable, but an AI driving them can still make
 mistakes — the worst case is recoverable because they only touch two files, both restorable from
 backups). **Continue is disabled until you've scrolled the agreement to the end and ticked the
-box** — the enforced version of "please read this first":
-
-![The same dialog after scrolling and ticking: the checkbox is checked and "Continue — start downloads" is enabled.](../images/explainers/x3-consent-gate-accepted.png)
+box** — the enforced version of "please read this first". Scroll to the end, tick *I understand
+and accept these risks*, and Continue lights up.
 
 Accepting is recorded **once per install**, and it does something more interesting than just
 starting three downloads: it raises the **`EX-CLOUD-LLM` exception** — a *named* departure from
@@ -173,9 +172,14 @@ Reading it bottom-up is the fastest way to understand the design:
 
 # Part 5 — Returning to PNA mode: one click back
 
-A **Return to PNA mode** control lives on the explainer page and in Settings while the exception
-is active. Click it and the exception clears, the banner goes, and the consent gate re-arms (so
-turning the integration back on asks you all over again):
+While the exception is active, a **Return to PNA mode** control sits at the bottom of the
+explainer page (and in Settings) — directly beneath the strength profile, so the honest table and
+the way out share a screen:
+
+![The active explainer's lower half: the strength profile with the green "Return to PNA mode" button directly beneath it, the red banner still showing at the top.](../images/explainers/x7a-return-to-pna-control.png)
+
+Click it and the exception clears, the banner goes, and the consent gate re-arms (so turning the
+integration back on asks you all over again):
 
 ![After returning: the explainer shows "Not currently active — this app is in PNA (local-only) mode" and the red banner is gone.](../images/explainers/x7-returned-to-pna.png)
 
