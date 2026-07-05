@@ -19,6 +19,11 @@ attached, plus Claude Desktop for AI integration.** That combination
 gets every feature — your private data (saved groups, tags, notes) as a
 real file on your disk, MCP integration, the works.
 
+Curious (or cautious) about what the AI integration can actually see
+and do, or what ever touches a network at all? The illustrated
+[External access & AI walkthrough](explainers/external-access-and-ai-walkthrough.md)
+explains the whole privacy model in plain language, screen by screen.
+
 **Saved groups need a folder.** Private data is only available once you
 attach a folder the app can verify it can write to — on a Chromium
 desktop browser. Everywhere else (Safari, Firefox, phones), and on
