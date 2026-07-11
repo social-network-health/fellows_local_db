@@ -160,7 +160,7 @@ def _dev_file_bytes_as_served(relpath: str) -> bytes | None:
                 _build_pwa.PLACEHOLDER_APP_JS_INTEGRITY,
                 _build_pwa.compute_sri_hash_bytes(stamped_app),
             )
-        jspdf = STATIC_DIR / "vendor" / "jspdf-2.5.1.umd.min.js"
+        jspdf = STATIC_DIR / "vendor" / "jspdf-4.2.1.umd.min.js"
         if jspdf.is_file():
             text = text.replace(
                 _build_pwa.PLACEHOLDER_JSPDF_INTEGRITY,
@@ -632,7 +632,7 @@ class Handler(BaseHTTPRequestHandler):
                     _build_pwa.PLACEHOLDER_APP_JS_INTEGRITY,
                     _build_pwa.compute_sri_hash_bytes(stamped_app_js),
                 )
-            jspdf_path = STATIC_DIR / "vendor" / "jspdf-2.5.1.umd.min.js"
+            jspdf_path = STATIC_DIR / "vendor" / "jspdf-4.2.1.umd.min.js"
             if jspdf_path.is_file():
                 text = text.replace(
                     _build_pwa.PLACEHOLDER_JSPDF_INTEGRITY,

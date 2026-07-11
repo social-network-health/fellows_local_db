@@ -436,7 +436,7 @@ If a cert appears that you didn't trigger (e.g. an attacker tricked a CA into is
 The signed manifest at `dist/manifest.json` covers every shell file the SW precaches:
 
 - `index.html`, `app.js`, `sw.js`, `styles.css`, `manifest.webmanifest`
-- `vendor/jspdf-2.5.1.umd.min.js`, `vendor/sqlite-worker.js`, `vendor/sqlite3.js`, `vendor/sqlite3.wasm`
+- `vendor/jspdf-4.2.1.umd.min.js`, `vendor/sqlite-worker.js`, `vendor/sqlite3.js`, `vendor/sqlite3.wasm`
 - All icons under `icons/`
 - `build-meta.json` (which itself carries `fellows_db_sha`, so `fellows.db` integrity flows transitively)
 

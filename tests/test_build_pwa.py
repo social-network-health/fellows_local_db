@@ -131,9 +131,9 @@ def test_stamp_sri_attributes_substitutes_index_html(tmp_path: Path):
     app_js_bytes = b"// stamped app.js bytes"
     jspdf_bytes = b"// jspdf vendored bytes"
     (tmp_path / "app.js").write_bytes(app_js_bytes)
-    (tmp_path / "vendor" / "jspdf-2.5.1.umd.min.js").write_bytes(jspdf_bytes)
+    (tmp_path / "vendor" / "jspdf-4.2.1.umd.min.js").write_bytes(jspdf_bytes)
     (tmp_path / "index.html").write_text(
-        f'<script src="/vendor/jspdf-2.5.1.umd.min.js" '
+        f'<script src="/vendor/jspdf-4.2.1.umd.min.js" '
         f'integrity="{PLACEHOLDER_JSPDF_INTEGRITY}" crossorigin="anonymous"></script>\n'
         f'<script src="/app.js" integrity="{PLACEHOLDER_APP_JS_INTEGRITY}" '
         f'crossorigin="anonymous"></script>\n',
@@ -225,7 +225,7 @@ def test_write_bundle_manifest_covers_security_critical_paths():
         "sw.js",
         "styles.css",
         "build-meta.json",
-        "vendor/jspdf-2.5.1.umd.min.js",
+        "vendor/jspdf-4.2.1.umd.min.js",
         "vendor/sqlite-worker.js",
         "vendor/sqlite3.js",
         "vendor/sqlite3.wasm",
