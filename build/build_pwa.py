@@ -60,7 +60,7 @@ MANIFEST_INCLUDE_PATHS = (
     "styles.css",
     "manifest.webmanifest",
     "build-meta.json",
-    "vendor/jspdf-2.5.1.umd.min.js",
+    "vendor/jspdf-4.2.1.umd.min.js",
     "vendor/sqlite-worker.js",
     "vendor/sqlite3.js",
     "vendor/sqlite3.wasm",
@@ -157,7 +157,7 @@ def stamp_sri_attributes(dist_dir: Path) -> None:
     app_js = dist_dir / "app.js"
     if app_js.is_file():
         text = text.replace(PLACEHOLDER_APP_JS_INTEGRITY, compute_sri_hash(app_js))
-    jspdf = dist_dir / "vendor" / "jspdf-2.5.1.umd.min.js"
+    jspdf = dist_dir / "vendor" / "jspdf-4.2.1.umd.min.js"
     if jspdf.is_file():
         text = text.replace(PLACEHOLDER_JSPDF_INTEGRITY, compute_sri_hash(jspdf))
     index_path.write_text(text, encoding="utf-8")
