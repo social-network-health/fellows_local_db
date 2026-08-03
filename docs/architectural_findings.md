@@ -5,7 +5,7 @@ PNA architecture it conforms to. Where [`ac_decisions_log.md`](ac_decisions_log.
 records individual decisions made *under* the architecture, this file
 records the rarer moments where building and operating the app taught us
 something the architecture itself didn't yet account for — findings worth
-feeding back into the [PNA Spec / Personal Network Toolkit](https://github.com/richbodo/personal_network_toolkit).
+feeding back into the [PNA Spec / Personal Network Toolkit](https://github.com/social-network-health/personal_network_toolkit).
 
 Newest first.
 
@@ -67,8 +67,8 @@ with the spec's tool-readability goal; EAR-in-transit is the conformant
 placement. Candidate guidance alongside the constraints/exceptions work.
 Decision recorded in [`ac_decisions_log.md`](ac_decisions_log.md)
 (2026-06-07); discussion in
-[#256](https://github.com/richbodo/fellows_local_db/issues/256), feature
-space in [#257](https://github.com/richbodo/fellows_local_db/issues/257).
+[#256](https://github.com/social-network-health/fellows_local_db/issues/256), feature
+space in [#257](https://github.com/social-network-health/fellows_local_db/issues/257).
 
 ---
 
@@ -160,7 +160,7 @@ toolkit's reference-driven model it should ride upstream with the working design
 that demonstrates it — and that demonstration is **test-first**: the demonstrating
 tests (the three properties above) define the enforceable boundary, and the spec
 is written to match what proved testable, not the other way round. Tracked in
-[#252](https://github.com/richbodo/fellows_local_db/issues/252).
+[#252](https://github.com/social-network-health/fellows_local_db/issues/252).
 
 ---
 

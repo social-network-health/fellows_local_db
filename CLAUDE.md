@@ -1,15 +1,93 @@
 # CLAUDE.md
 
-Read README.md for project setup, API docs, and test commands. Read docs/Architecture.md for fellows_local_db's specialization and PNA-spec conformance (axis picks, fellows-specific schema, HTTP routes, debug placeholders); docs/Architecture.md cross-links into the [personal_network_toolkit](https://github.com/richbodo/personal_network_toolkit) repo for the universal PNA architecture.
+Read README.md for project setup, API docs, and test commands. Read docs/Architecture.md for fellows_local_db's specialization and PNA-spec conformance (axis picks, fellows-specific schema, HTTP routes, debug placeholders); docs/Architecture.md cross-links into the [personal_network_toolkit](https://github.com/social-network-health/personal_network_toolkit) repo for the universal PNA architecture.
 
-## Sibling repositories (cross-repo work)
+<!-- BEGIN SHARED: org-conventions v3 -->
+<!-- Canonical copy: social-network-health/docs/shared/org-conventions.md
+     Do not edit this block in place. Edit the canonical copy and propagate. -->
 
-The PNA Toolkit spec repo and the other reference design are separate Git repos checked out as **siblings of this one**, one directory above the repo root:
+## The organization
 
-- `../personal_network_toolkit` — the PNA Toolkit (PNT): the universal spec, contracts, and lints this design attests conformance to. Its `origin/main` is the source of truth for upstream work (see § Workflow, "Upstream contributions").
-- `../prm` — the second reference design (Personal Relationship Manager), for cross-design comparison.
+Eight repos under the **[social-network-health](https://github.com/social-network-health)**
+GitHub org. A developer normally has them **all checked out side by side in one parent
+directory**, so from any repo root every other repo is at `../<name>`. Write cross-repo paths
+relative to the repo root, never absolute — the parent directory differs per host.
 
-A change here can have cross-repo implications for PNT (a conformance or contract change); when in doubt, read PNT's `spec/` and this repo's `docs/Architecture.md`. This sibling layout is a stable convention of the working environment (it could change, but holds for now). It lives in CLAUDE.md — not in agent memory — because memory is keyed to the working directory, so a worktree at a different path starts with a fresh memory dir; a committed file is the only channel that reaches every worktree and every concurrent agent.
+**[`RELATED_REPOS.md`](https://github.com/social-network-health/social-network-health/blob/main/RELATED_REPOS.md)**
+in the hub repo is the single source of truth for what those repos are and what each is for.
+Don't restate the list in a repo's own docs — a second copy is a second thing to forget.
+
+The layout is a convention of the working environment; it could change, but it holds for now.
+It lives in `CLAUDE.md` rather than agent memory because **memory is keyed to the working
+directory** — a worktree at a different path starts with a fresh memory dir. A committed file
+is the only channel that reaches every worktree and every concurrent agent.
+
+## Planning has four layers
+
+| # | Question | Lives in |
+|---|---|---|
+| 1 | "What is the software program?" | hub [`plan.md`](https://github.com/social-network-health/social-network-health/blob/main/plan.md) — the M1/M2/M3 summary |
+| 2 | "What should the org be doing?" | hub [`plans/`](https://github.com/social-network-health/social-network-health/tree/main/plans) + `plans/ORG-TASKS.md` |
+| 3 | "Where is this repo headed?" | **this repo's** `docs/roadmap.md` |
+| 4 | "What's in flight?" | **this repo's** GitHub issues and active branches |
+
+Record a thought at the layer matching its scope.
+
+**Layer 2 is org-only.** Work actionable inside one existing repo belongs in that repo;
+`ORG-TASKS.md` links down to it rather than restating its status. **Layer 1 is narrower than
+the organization** — `plan.md` summarizes the software and research program, not community
+building, the toolkit wiki, or educational materials.
+
+Dated files under `plans/` are append-only thinking artifacts. Never update one; write a new
+one. `ORG-TASKS.md` is the sole exception — it is kept current.
+
+## Cross-repo working rules
+
+Each of these was learned the hard way in one repo. They apply in all of them.
+
+- **PR and issue bodies via `--body-file`, never an inline `--body`.** Backticks and `$(…)`
+  get shell-interpreted and silently drop content — a commit hash has been lost this way.
+- **After a PR merges, verify every intended commit actually landed.** A dropped commit is
+  silent; recover it in a follow-up rather than assuming the merge was faithful.
+- **Triage every test failure as pre-existing or newly-introduced before shipping.** Stash
+  and re-run against the base to tell which. Never absorb a pre-existing red into unrelated
+  work, and never claim green while a known red stands.
+- **Upstream `main` beats local staging plans.** In a multi-agent setup another agent may
+  have already filed, merged, or evolved a cross-repo contribution. Check the upstream repo's
+  `main` before developing one further — local `plans/` lag.
+- **Fail loudly.** Convert an absent guarantee into a red test or a lint failure, never a
+  silent pass. Deferrals carry an honest status marker — a strict-xfail, an `Open`/`partial`
+  attestation, a documented "⏳ next" — never a bare `TODO` claiming a property the code
+  doesn't deliver.
+- **One source of truth per fact.** Restating a fact in a second document creates a drift
+  surface. Put it in the doc that owns the category and link from the others.
+- **Orient without moving; branch only to work.** Reading and priming never need a branch
+  change — in a multi-worktree setup `main` is often checked out elsewhere, so a checkout
+  fails or strands uncommitted work. Run `git worktree list` before starting. Repo-specific
+  worktree setup and port serialization live in that repo's own sections.
+- **A sync rule without a mechanical check is a wish.** Anything that must hold in more than
+  one repo ships with a command that verifies it, and the rule names the command. Nobody
+  eyeballs eight repos, so silent drift is the default outcome otherwise.
+
+## Changing this block
+
+This block is generated. To change it: edit the canonical copy, bump the version in both
+markers, run `just sync-conventions` from the hub repo, then open one PR per repo.
+`just check-conventions` verifies every copy matches; `just check-org` runs every org check.
+Full procedure: hub `docs/org-upkeep.md`.
+
+<!-- END SHARED: org-conventions v3 -->
+
+## Upstream and the other reference design
+
+- `../personal_network_toolkit` — the PNA Toolkit (PNT): the universal spec, contracts, and
+  lints this design attests conformance to. Its `origin/main` is the source of truth for
+  upstream work (see § Workflow, "Upstream contributions").
+- `../prm` — the second reference design (Personal Relationship Manager), for cross-design
+  comparison.
+
+A change here can have cross-repo implications for PNT (a conformance or contract change);
+when in doubt, read PNT's `spec/` and this repo's `docs/Architecture.md`.
 
 ## Constraints
 
@@ -40,7 +118,7 @@ A change here can have cross-repo implications for PNT (a conformance or contrac
 - **Before shipping, run the suite and triage every failure as pre-existing vs. newly-introduced.** A red that reproduces on a clean branch/`main` HEAD (stash your changes to check) is pre-existing — say so explicitly and fix it as its own scoped change; never silently absorb it into unrelated work, and never claim green while a known red stands. This is § Conformance discipline's *everything fails loudly* applied to the test run itself.
 - **Default posture: orient without moving; branch only to work.** Reading or priming never needs a branch change — don't `git checkout main` / `git pull` just to get oriented (in a multi-worktree setup `main` is often checked out elsewhere, so the checkout fails or strands uncommitted work). Create a worktree (next bullet / `just wt`) when you start *actual work*, and run `git worktree list` first to spot a sibling already on a related branch.
 - **Multiple agents on one host → one git worktree each.** When more than one Claude Code / agent works on this checkout's host concurrently, give each its own worktree so a `git checkout` in one can't yank the branch (or uncommitted work) out from under another. Spin up with `just wt <branch>`, or `git worktree add ../fellows-wt-<branch> -b <branch> && scripts/wt-setup.sh ../fellows-wt-<branch>` (the setup script symlinks the heavy gitignored artifacts — `.venv`, `app/fellows.db`, `mcp_servers/.venv` — so the worktree is test-ready instantly). Worktrees isolate the *filesystem*, **not port 8765**: edits / `just test-db` / conformance lints run in parallel, but **server-based runs (`serve`, `test-api` / `test-e2e` / `test-mobile`) must be serialized across worktrees** — `ensure_port_8765_free.sh` kills whatever holds 8765, so a sibling's e2e run dies mid-flight and looks like a flaky test. The symlinked `app/fellows.db` is *shared*, so don't `db-rebuild`/`reset` while a sibling is testing. `just wtclean <branch>` when done. Full rationale: [`docs/worktrees.md`](docs/worktrees.md).
-- **Upstream contributions: the upstream repo's `main` is the source of truth — not the local plan.** Before recommending a filing action *or developing a [PNA Toolkit (PNT)](https://github.com/richbodo/personal_network_toolkit) contribution further*, verify its real status against PNT `origin/main` — the `spec/` files + `tools/lint-spec-ids.py` — **not** the fellows-side `plans/pna_toolkit_*` banners. Those plans **lag**: in a multi-agent setup another agent may have already filed, merged, or evolved the work upstream (a fellows plan read "ready to file" while the concept was already merged on PNT main and iterated *beyond* it). Local `plans/` are staging records; the upstream `main` supersedes them and is the more recent, relevant state. Make this check **first, every time** — it's the cross-repo analog of "after a PR merges, verify every intended commit actually landed." When you do touch the PNT checkout, use a worktree off PNT `origin/main` (previous bullet) — it may be on another agent's branch.
+- **Upstream contributions: the upstream repo's `main` is the source of truth — not the local plan.** Before recommending a filing action *or developing a [PNA Toolkit (PNT)](https://github.com/social-network-health/personal_network_toolkit) contribution further*, verify its real status against PNT `origin/main` — the `spec/` files + `tools/lint-spec-ids.py` — **not** the fellows-side `plans/pna_toolkit_*` banners. Those plans **lag**: in a multi-agent setup another agent may have already filed, merged, or evolved the work upstream (a fellows plan read "ready to file" while the concept was already merged on PNT main and iterated *beyond* it). Local `plans/` are staging records; the upstream `main` supersedes them and is the more recent, relevant state. Make this check **first, every time** — it's the cross-repo analog of "after a PR merges, verify every intended commit actually landed." When you do touch the PNT checkout, use a worktree off PNT `origin/main` (previous bullet) — it may be on another agent's branch.
 
 ## Conformance discipline
 

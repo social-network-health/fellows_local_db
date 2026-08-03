@@ -28,7 +28,7 @@ before stalling. A future contributor seeing a security-review line item
 would reasonably resume it. We are deciding **not to**: app-EAR for the
 *live* store is rejected. Full analysis in
 [`architectural_findings.md`](architectural_findings.md) (2026-06-07);
-discussion in [#256](https://github.com/richbodo/fellows_local_db/issues/256).
+discussion in [#256](https://github.com/social-network-health/fellows_local_db/issues/256).
 
 **The constraint that shaped the decision.** App-EAR for the live store is
 both *dominated* and *contradictory*:
@@ -50,7 +50,7 @@ encrypted, versioned *portable export* crossing an untrusted commodity
 channel (email, etc.), where the live store stays plaintext/tool-readable
 and the passphrase cost lands on an occasional, deliberate "move my data"
 action. That is the sanctioned direction
-([#257](https://github.com/richbodo/fellows_local_db/issues/257)); the
+([#257](https://github.com/social-network-health/fellows_local_db/issues/257)); the
 harvested crypto envelope from PR #155 (`eb66109`) is the reusable part.
 
 ## 2026-05-30 — Cloud-LLM integration is allowed but treated as a named, reversible "exception" that exits PNA mode, not forbidden and not silent
@@ -457,5 +457,5 @@ mechanism through to the install layer.
 - [`plans/easy_mcp_install.md`](../plans/easy_mcp_install.md) — full plan
 - [`docs/Architecture.md`](./Architecture.md) — AC-MCP-A and the axis pick
 - [`mcp_servers/README.md`](../mcp_servers/README.md) — Cloud LLM caveat (the existing AC-MCP-A surfacing for the Python servers)
-- [PNA Spec § Universal architectural commitments](https://github.com/richbodo/personal_network_toolkit/blob/main/PNA_Spec.md#universal-architectural-commitments)
-- [PNA axes § mcp-exposure](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#mcp-exposure)
+- [PNA Spec § Universal architectural commitments](https://github.com/social-network-health/personal_network_toolkit/blob/main/PNA_Spec.md#universal-architectural-commitments)
+- [PNA axes § mcp-exposure](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#mcp-exposure)

@@ -88,7 +88,7 @@ Dock**.
 
 If Spotlight / Start menu / launcher all come up empty, it probably didn't
 install — try *Can't install at all?* below. If that doesn't help either,
-file a [GitHub issue](https://github.com/richbodo/fellows_local_db/issues)
+file a [GitHub issue](https://github.com/social-network-health/fellows_local_db/issues)
 (ask Rich for repo access if you don't have it).
 
 And remember: `https://fellows.globaldonut.com` always works in a browser
@@ -111,7 +111,7 @@ ask for help:
 
 Both are free and don't require sign-in. Send the report to the EHF
 Communications Working Group along with what you tried, or file a
-[GitHub issue](https://github.com/richbodo/fellows_local_db/issues)
+[GitHub issue](https://github.com/social-network-health/fellows_local_db/issues)
 (ask Rich for repo access first if you don't have it).
 
 ---
@@ -454,7 +454,7 @@ no account or per-user storage on it at all. The only things production keeps
 are operational logs (which carry hashed prefixes, never your email in the log
 line) and the public app bundle. The **About** page links a full accounting —
 *What data is kept* — or read it directly in
-[`docs/data_retention.md`](https://github.com/richbodo/fellows_local_db/blob/main/docs/data_retention.md).
+[`docs/data_retention.md`](https://github.com/social-network-health/fellows_local_db/blob/main/docs/data_retention.md).
 
 ### Turning on saved groups (private data)
 
@@ -1184,10 +1184,10 @@ submit), the gate has its own diagnostics block:
   SHA, and a non-reversible 12-char hash of your address (so we can
   find which sign-in attempt failed). Sanitization happens server-side
   in
-  [`deploy/client_error_sanitizer.py`](https://github.com/richbodo/fellows_local_db/blob/main/deploy/client_error_sanitizer.py).
+  [`deploy/client_error_sanitizer.py`](https://github.com/social-network-health/fellows_local_db/blob/main/deploy/client_error_sanitizer.py).
 
 Prefer GitHub? File an issue at
-[github.com/richbodo/fellows_local_db/issues](https://github.com/richbodo/fellows_local_db/issues)
+[github.com/social-network-health/fellows_local_db/issues](https://github.com/social-network-health/fellows_local_db/issues)
 — useful when you want a thread to track the fix in, or when the in-app
 report can't reach the server. Ask Rich to add you to the repo if you
 don't have access yet.
@@ -1238,7 +1238,7 @@ help — update iOS itself (iPhone 8 and newer support 16.4+).
 - **General questions** — fellows channels, or EHF Communications
   Working Group.
 - **Bug reports / feature requests** — file a
-  [GitHub issue](https://github.com/richbodo/fellows_local_db/issues)
+  [GitHub issue](https://github.com/social-network-health/fellows_local_db/issues)
   (you'll need to be added to the repo first — ask Rich). The same
   GitHub link is on the About page.
 - **Lost or expired install link** — request a fresh one from the

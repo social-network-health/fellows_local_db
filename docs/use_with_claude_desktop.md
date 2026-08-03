@@ -195,7 +195,7 @@ they were configured with; they don't have wider access than you
 grant them in the install dialog.
 
 Click **Install** to proceed past the banner. This is tracked
-upstream as [issue #186](https://github.com/richbodo/fellows_local_db/issues/186)
+upstream as [issue #186](https://github.com/social-network-health/fellows_local_db/issues/186)
 — we'd prefer a less alarming UX but it's Claude Desktop's
 load-bearing trust check, so it stays until Anthropic ships
 verification for community extensions.
@@ -315,7 +315,7 @@ Check the **About** page — it shows the install name
 ### Other issues
 
 The integration is in beta — if something doesn't work and isn't
-covered above, file a [GitHub issue](https://github.com/richbodo/fellows_local_db/issues)
+covered above, file a [GitHub issue](https://github.com/social-network-health/fellows_local_db/issues)
 or use the in-app **Report a bug** button.
 
 ---

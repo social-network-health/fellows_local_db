@@ -1,6 +1,6 @@
 # Plan — Contributing the **Constraints** concept to the Personal Network Toolkit (PNT)
 
-> **Status: MERGED — [PNT PR #18](https://github.com/richbodo/personal_network_toolkit/pull/18) merged 2026-06-03.** This document staged the contribution; it was
+> **Status: MERGED — [PNT PR #18](https://github.com/social-network-health/personal_network_toolkit/pull/18) merged 2026-06-03.** This document staged the contribution; it was
 > executed on the PNT branch `spec/constraints-concept`, opened as PR #18, and **merged**. The as-built set
 > matches §3a–3f: `spec/constraints.md` (new), the `tools/lint-spec-ids.py` CST checks, the
 > `PNA_Spec.md`/`axes.md` pointers, the SKILL build + evaluate steps, and the `fellows_local_db`

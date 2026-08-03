@@ -95,7 +95,7 @@ Desktop. Material facts:
   everything on your computer. Any developer information shown has
   not been verified by Anthropic."* This is a separate trust layer
   from Gatekeeper (Apple Developer ID signing doesn't address it).
-  Tracking the disclosure UX in [issue #186](https://github.com/richbodo/fellows_local_db/issues/186);
+  Tracking the disclosure UX in [issue #186](https://github.com/social-network-health/fellows_local_db/issues/186);
   the PWA preamble (§ 7) previews the warning so users aren't
   surprised. Discovered during smoke test of #185.
 
@@ -426,7 +426,7 @@ MCP surface:
   artifact.
 
 Both target the same PNA spec contracts
-([`mcp-shared-data-ops.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/),
+([`mcp-shared-data-ops.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/),
 `mcp-private-data-ops.schema.json`,
 `mcp-comms.schema.json`). The contracts are the conformance anchor.
 
@@ -528,7 +528,7 @@ Copy will be reviewed in implementation; the structure (the
 three-bundle boundary + the consent moment + the per-bundle
 opt-in + the install-warning preview) is the load-bearing part.
 The install-warning preview specifically is tracked in
-[issue #186](https://github.com/richbodo/fellows_local_db/issues/186) —
+[issue #186](https://github.com/social-network-health/fellows_local_db/issues/186) —
 the wording above is a first draft to be refined with a real
 screenshot once the Settings UI is in implementation.
 
@@ -660,7 +660,7 @@ level):
    browser before offering the easy path; Safari/Firefox users get
    the secondary-path link instead. The `user_config.relationships_db`
    default uses the path the PWA knows about (`<folder>/Fellows/relationships.db`)
-   for the Chromium user. Addresses [#186](https://github.com/richbodo/fellows_local_db/issues/186)
+   for the Chromium user. Addresses [#186](https://github.com/social-network-health/fellows_local_db/issues/186)
    install-warning preview in the same PR.
 7. **`docs/use_with_claude_desktop.md` rewrite.** Branch
    `docs/mcpb-walkthrough-rewrite`. Replaces the current
@@ -688,7 +688,7 @@ the work-plan for the final-polish PR (somewhere around § 12 step
 8). Each item should link a GH issue if it warrants tracking
 beyond this file.
 
-- **[#186](https://github.com/richbodo/fellows_local_db/issues/186) — install-warning disclosure UX.** Claude Desktop shows a red *"access to everything / not Anthropic-verified"* banner during `.mcpb` install. Apple Developer ID code signing does not address it (different trust layer). The realistic resolution is the PWA preamble previewing the warning so users aren't surprised; copy lives in § 7 above. Address in the `feat/mcpb-settings-ui` and `docs/mcpb-walkthrough-rewrite` PRs.
+- **[#186](https://github.com/social-network-health/fellows_local_db/issues/186) — install-warning disclosure UX.** Claude Desktop shows a red *"access to everything / not Anthropic-verified"* banner during `.mcpb` install. Apple Developer ID code signing does not address it (different trust layer). The realistic resolution is the PWA preamble previewing the warning so users aren't surprised; copy lives in § 7 above. Address in the `feat/mcpb-settings-ui` and `docs/mcpb-walkthrough-rewrite` PRs.
 
 - ✅ **Parity test exercises the staged bundle layout.** Resolved in the private-data-ops PR. `tests/test_mcpb_parity.py` now includes `test_staged_shared_bundle_default_resolution` and `test_staged_private_bundle_default_resolution` which spawn `mcpb/node/.staging/<name>/server/index.js` with no env-var overrides and assert default path resolution Just Works. Both bugs from #187 would have been caught here.
 

@@ -156,7 +156,7 @@ that can't be regenerated if lost). The matrix isn't uniform.
 
 ## See also
 
-- [PNA Spec](https://github.com/richbodo/personal_network_toolkit) — the universal architectural commitments AC-2 (*no SaaS surface*) formalizes what *Never-SaaS* names colloquially.
+- [PNA Spec](https://github.com/social-network-health/personal_network_toolkit) — the universal architectural commitments AC-2 (*no SaaS surface*) formalizes what *Never-SaaS* names colloquially.
 - [`docs/Architecture.md`](./Architecture.md) — `fellows_local_db`'s own AC-2 realization (PWA-with-user-folder).
 - [`docs/ac_decisions_log.md`](./ac_decisions_log.md) — concrete decisions where the Never-SaaS posture shaped the architecture.
 - [`plans/user_folder_storage.md`](../plans/user_folder_storage.md) — the architecture that closes most of the PWA-as-Never-SaaS gap.

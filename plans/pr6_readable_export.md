@@ -2,7 +2,7 @@
 
 **Status:** SCOPED, not started. **Created:** 2026-06-03.
 **Why:** PNT added a Private-schema sub-contract, **PR-6** (human-readable export),
-landed upstream in [personal_network_toolkit#17](https://github.com/richbodo/personal_network_toolkit/pull/17).
+landed upstream in [personal_network_toolkit#17](https://github.com/social-network-health/personal_network_toolkit/pull/17).
 It SHOULD-requires a flat, tool-free export of the Private DB *in addition to* the
 canonical SQLite file — readable with a generic JSON/CSV reader and **no app
 tooling**. fellows_local_db is the demonstrating reference design: this plan
