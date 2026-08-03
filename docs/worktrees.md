@@ -1,4 +1,4 @@
-# Git worktrees (parallel agents on one host)
+# Parallel development (worktrees, lanes, fan-out)
 
 When more than one Claude Code instance — or one orchestrator spawning subagents
 — works on this repo's host at the same time, give each its own **git worktree**.
@@ -79,3 +79,69 @@ for an orchestrator spawning subagents, the harness option is.
 Worktrees and their branches accumulate. `just wtclean <branch>` (or
 `git worktree remove … && git worktree prune`) when a lane is finished.
 `git worktree list` shows what's currently checked out where.
+
+---
+
+# How to split the work
+
+Everything above is mechanics. This is the part that decides whether parallel work
+actually goes faster — extracted from the private-data-gate + mobile-rebuild effort
+(`plans/EPIC_private_data_and_mobile.md`, completed 2026-06-07), which is the largest
+multi-agent push this repo has run.
+
+## Lanes, not PRs
+
+**One worktree per *lane* — a file-ownership boundary — not per PR.** Split by PR and two
+agents end up editing the same file; split by ownership and every merge is clean.
+
+The lane set that worked here:
+
+| Lane | Owns | Parallel? |
+|---|---|---|
+| **CORE** | `app/static/app.js` | **critical path — sequential, one owner, always** |
+| WORKER | `app/static/vendor/sqlite-worker.js` | yes, against the RPC contract |
+| STYLE | `app/static/styles.css`, `index.html` | yes, against the class / DOM-id contract |
+| DOCS | `docs/*` | fully parallel |
+| TESTS | `tests/e2e/*` | yes; baselines deferred to integration |
+
+**`app/static/app.js` has exactly one owner and is never split across concurrent agents.**
+CLAUDE.md says it's a single IIFE with no modules or classes; the consequence is that its
+12,000+ lines cannot be meaningfully divided. It is the critical path, and everything else
+parallelizes *around* it.
+
+## Freeze the interfaces before fanning out
+
+Run a **read-only analysis pass first**, and have it produce the contracts the lanes will
+build against — the worker↔page RPC surface (with its `WORKER_RPC_VERSION` bump), the DOM/CSS
+class names, the inventory of sites needing changes, the test-gap list.
+
+Lanes then build against frozen names and merge cleanly. Skipping this step is what turns
+parallel work into conflict resolution. Those findings are worth keeping: this repo's are in
+`plans/EPIC_phase0_findings.md`.
+
+## Fan-out needs no inter-agent comms
+
+Independent lanes working against frozen interfaces return findings and diffs to the
+orchestrator, which integrates. Reserve agent-to-agent coordination for the one case that
+justifies it: a lane discovers the frozen interface is *wrong*. Even then it's cheaper for
+the orchestrator to re-freeze and re-dispatch than for lanes to negotiate.
+
+## The honest ceiling
+
+The speedup comes from offloading WORKER/STYLE/DOCS/TESTS while CORE proceeds — **not** from
+parallelizing `app.js`. Don't expect linear scaling. The single-file frontend and the single
+test port bound it, and **port 8765, not agent count, is the real cap on concurrent
+verification.**
+
+## Integration order
+
+Merge the lanes, resolve the `app.js` ↔ css ↔ worker seams, then run the full suite.
+
+- **Re-baseline mobile snapshots LAST.** Pixels keep moving until the UI is final, so
+  baselining early just means doing it twice.
+- **Watch for coupled landings.** Some changes cannot go green separately and must ship as
+  one unit. The gate work hit this: the desktop e2e suite and the `worker_data` wipe fixture
+  run in a *no-folder* context but expect `relationships.db` to work — precisely the state the
+  gate turns into browse-only. So the localStorage-only fix, the surface gating, and the new
+  folder-attached fixture had to land together. When a test fixture encodes an assumption your
+  change invalidates, the fixture change is part of the same landing.
