@@ -2,28 +2,28 @@
 
 This document is fellows_local_db's **specialization-and-conformance layer**: it declares which version of the PNA Spec this repo conforms to, names the axis picks fellows has made, and catalogs the fellows-specific values that the spec leaves to each implementation (HTTP routes, schema, worker constants, debug placeholders, distribution tunables).
 
-Universal PNA architecture — vocabulary, goals, the two-store ownership split, the worker-owned-OPFS rule, the version-handshake contract, the universal ACs — lives in the [PNA Spec](https://github.com/richbodo/personal_network_toolkit/blob/main/PNA_Spec.md) at the [personal_network_toolkit](https://github.com/richbodo/personal_network_toolkit) repo. This file does not restate it.
+Universal PNA architecture — vocabulary, goals, the two-store ownership split, the worker-owned-OPFS rule, the version-handshake contract, the universal ACs — lives in the [PNA Spec](https://github.com/social-network-health/personal_network_toolkit/blob/main/PNA_Spec.md) at the [personal_network_toolkit](https://github.com/social-network-health/personal_network_toolkit) repo. This file does not restate it.
 
 ---
 
 ## Spec conformance
 
-**Toolkit-Version:** [0.2](https://github.com/richbodo/personal_network_toolkit/blob/main/VERSION) — the PNT version (spec + contracts + skill + lint + templates) this design was built and validated against. This re-attestation tracks the v0.2-cuttable normative spine merged to PNT `main` — the L1/L2 layering (realizations factored out of the `AC-*` namespace into the `RZ-*` family; fellows's former AC-3/12/13/14 are now RZ-1/2/3/4), the user-mediation mechanism (UM-1/2/3), the un-relaxable Exceptions floor, the `pna-active` predicate split, and the two new universal ACs **AC-22** (honest capability assessment) + **AC-23** (source available for verification). PNT's mechanical `v0.2.0` tag follows the reference designs' 0.2 re-attestations (PRM's and this one), so this design attests at 0.2 ahead of the tag.
-**Use case:** [Directory Archive](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/use_cases.md#directory-archive)
+**Toolkit-Version:** [0.2](https://github.com/social-network-health/personal_network_toolkit/blob/main/VERSION) — the PNT version (spec + contracts + skill + lint + templates) this design was built and validated against. This re-attestation tracks the v0.2-cuttable normative spine merged to PNT `main` — the L1/L2 layering (realizations factored out of the `AC-*` namespace into the `RZ-*` family; fellows's former AC-3/12/13/14 are now RZ-1/2/3/4), the user-mediation mechanism (UM-1/2/3), the un-relaxable Exceptions floor, the `pna-active` predicate split, and the two new universal ACs **AC-22** (honest capability assessment) + **AC-23** (source available for verification). PNT's mechanical `v0.2.0` tag follows the reference designs' 0.2 re-attestations (PRM's and this one), so this design attests at 0.2 ahead of the tag.
+**Use case:** [Directory Archive](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/use_cases.md#directory-archive)
 
 ### Flavor — fellows's six axis picks
 
 | Axis | Pick | Why |
 |---|---|---|
-| [Distribution](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#distribution) | `web-bundle-with-magic-link` | EHF-allowlisted PWA; multiple fellows install from one origin behind a magic-link gate. |
-| [Storage substrate](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#storage-substrate) | `opfs-sqlite-wasm` | Browser-only deployment; sqlite3.wasm in a dedicated worker with OPFS-SAH-Pool VFS. |
-| [Ingestion shape](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#ingestion-shape) | `single-source-static-mirror` | One source (Knack JSON dump); no dedup; opt-in user-driven re-import. |
-| [Workspace shell](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#workspace-shell) | `vanilla-js-spa` | Single-IIFE `app/static/app.js`; hash routing; no framework, no bundler. |
-| [Comms transport set](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#comms-transport-set) | `mailto-only` | `mailto:` (+ `tel:`) today; Signal planned. |
-| [MCP-exposure](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md#mcp-exposure) | `shared+private+comms` | `mcp_servers/` ships three stdio MCP servers for Claude Desktop and similar clients. |
+| [Distribution](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#distribution) | `web-bundle-with-magic-link` | EHF-allowlisted PWA; multiple fellows install from one origin behind a magic-link gate. |
+| [Storage substrate](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#storage-substrate) | `opfs-sqlite-wasm` | Browser-only deployment; sqlite3.wasm in a dedicated worker with OPFS-SAH-Pool VFS. |
+| [Ingestion shape](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#ingestion-shape) | `single-source-static-mirror` | One source (Knack JSON dump); no dedup; opt-in user-driven re-import. |
+| [Workspace shell](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#workspace-shell) | `vanilla-js-spa` | Single-IIFE `app/static/app.js`; hash routing; no framework, no bundler. |
+| [Comms transport set](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#comms-transport-set) | `mailto-only` | `mailto:` (+ `tel:`) today; Signal planned. |
+| [MCP-exposure](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md#mcp-exposure) | `shared+private+comms` | `mcp_servers/` ships three stdio MCP servers for Claude Desktop and similar clients. |
 
 This section is fellows's **AC attestation table** — the Security Target role from the toolkit's
-[`ARCHITECTURE_TEMPLATE.md`](https://github.com/richbodo/personal_network_toolkit/blob/main/reference_designs/templates/ARCHITECTURE_TEMPLATE.md).
+[`ARCHITECTURE_TEMPLATE.md`](https://github.com/social-network-health/personal_network_toolkit/blob/main/reference_designs/templates/ARCHITECTURE_TEMPLATE.md).
 Every applicable AC carries a **Realization** (how the code satisfies it), a **Verification** (the
 test, rubric, or human-review note that proves it), and a **Status**. Verification refs are
 `file::test_function` where a deterministic test exists; otherwise an LLM rubric or a human-review
@@ -67,7 +67,7 @@ note is named (both acceptable per the template). Status is `conformant` / `part
 
 ### Flavor-derived ACs and realizations triggered by fellows's picks
 
-Cross-referenced to the toolkit's [axes.md](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md):
+Cross-referenced to the toolkit's [axes.md](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md):
 
 | AC | Triggered by | Realization | Verification | Status |
 |---|---|---|---|---|
@@ -79,7 +79,7 @@ Cross-referenced to the toolkit's [axes.md](https://github.com/richbodo/personal
 | RZ-3 (COOP/COEP required) | `storage:opfs-sqlite-wasm` + `dist:web-served` | Both dev (`app/server.py:Handler.end_headers`) and prod (`deploy/server.py`) send `Cross-Origin-Opener-Policy: same-origin` + `Cross-Origin-Embedder-Policy: require-corp` and a strict CSP. Caddy preserves them at the edge. | `tests/test_api.py::TestSecurityHeaders::test_coop_coep_present`, `tests/test_api.py::TestSecurityHeaders::test_strict_csp_present`, `tests/test_api.py::TestSecurityHeaders::test_other_hardening_headers_present` | conformant |
 | RZ-4 (SW never owns SQLite) | `dist:web-bundle-with-magic-link` (PWA) | `app/static/sw.js` is app-shell + update/signature only; `/fellows.db` is explicitly bypassed in the fetch handler. | `tests/e2e/test_sw_post_caching.py`; `test_image_cache_no_bust.py` | conformant |
 
-> **Layer-2 realizations (v0.2).** `RZ-1 / RZ-2 / RZ-3 / RZ-4` are the Layer-2 realizations fellows's `opfs-sqlite-wasm` + web-served picks bring (defined in [spec/axes.md](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md)); the L1/L2 layering pass factored them out of the `AC-*` namespace — they were AC-3/12/13/14 before v0.2 (see the [Retired IDs](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/axes.md#retired-ids-redirects) map). **RZ-2** realizes the universal **AC-22** above; **RZ-1 / RZ-3 / RZ-4** realize **AC-1** (and AC-11).
+> **Layer-2 realizations (v0.2).** `RZ-1 / RZ-2 / RZ-3 / RZ-4` are the Layer-2 realizations fellows's `opfs-sqlite-wasm` + web-served picks bring (defined in [spec/axes.md](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/axes.md)); the L1/L2 layering pass factored them out of the `AC-*` namespace — they were AC-3/12/13/14 before v0.2 (see the [Retired IDs](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/axes.md#retired-ids-redirects) map). **RZ-2** realizes the universal **AC-22** above; **RZ-1 / RZ-3 / RZ-4** realize **AC-1** (and AC-11).
 
 ### ACs that are not applicable in fellows's flavor
 
@@ -88,7 +88,7 @@ Cross-referenced to the toolkit's [axes.md](https://github.com/richbodo/personal
 | AC-PRM-B | Applies to `ingestion:multi-source-merge-with-dedup`; fellows is single-source (`single-source-static-mirror`). |
 | RZ-5 | Applies to `storage:native-sqlite-via-filesystem`; fellows uses `opfs-sqlite-wasm`. |
 
-Picks fellows did not take on other axes carry their own flavor-derived ACs in [axes.md](https://github.com/richbodo/personal_network_toolkit/blob/main/axes.md); none fire here.
+Picks fellows did not take on other axes carry their own flavor-derived ACs in [axes.md](https://github.com/social-network-health/personal_network_toolkit/blob/main/axes.md); none fire here.
 
 ### Exception attestation (non-PNA mode)
 
@@ -138,13 +138,13 @@ a silent conformance failure, which this gate exists to prevent.
 EAR of `relationships.db` is **intentionally not done** (decision
 2026-06-07; see [`./ac_decisions_log.md`](./ac_decisions_log.md) +
 [`./architectural_findings.md`](./architectural_findings.md),
-[#256](https://github.com/richbodo/fellows_local_db/issues/256)). It is
+[#256](https://github.com/social-network-health/fellows_local_db/issues/256)). It is
 *dominated* by device full-disk encryption and *contradicts*
 `CST-PWA-SANDBOX-SEALED` — a `.locked` file is unreadable by the
 MCP/CLI/backup tools folder mode exists to feed, so "encrypted" and
 "tool-readable" are mutually exclusive. Encryption's sanctioned home is
 **in-transit**: the encrypted portable export
-([#257](https://github.com/richbodo/fellows_local_db/issues/257)), where
+([#257](https://github.com/social-network-health/fellows_local_db/issues/257)), where
 the live store stays tool-readable. Device FDE is the recommended at-rest
 layer.
 
@@ -166,7 +166,7 @@ testability argument: [`./architectural_findings.md` § 2026-06-07](./architectu
 ("the workspace is the user's actuation surface; test the gate, not the
 human"); the upstream-contribution arc and the `UM-1..UM-3` working IDs are
 staged in [`../plans/pna_toolkit_user_mediation_contribution.md`](../plans/pna_toolkit_user_mediation_contribution.md)
-(tracking [#252](https://github.com/richbodo/fellows_local_db/issues/252)).
+(tracking [#252](https://github.com/social-network-health/fellows_local_db/issues/252)).
 
 **The bounded claim (the honest part).** The invariant guarantees
 **separation, legibility, and attribution — not comprehension.** We do not,
@@ -202,11 +202,11 @@ this design attests its **boundary list**.
 | `mailto:` compose / send | egress:mailto | MCP `comms.stage_email` / compose panel stages a `mailto:` URL + payload preview → the user's mail client launches it | `tests/test_comms.py::test_stage_email_basic_to`, `tests/test_comms.py::test_stage_email_bcc_group_send`; `tests/e2e/test_groups_compose.py` | conformant |
 | Group export (HTML / PDF) | egress:export | export panel renders recipients + subject + body + merged member data before launch → user downloads / launches | `tests/e2e/test_groups_export.py::test_html_export_downloads_single_self_contained_file`; `tests/e2e/test_stored_xss.py::test_group_name_and_note_are_escaped_on_index` | conformant |
 | Directory re-import (shared mirror; touches private FKs) | mutation:reimport | About-page importer stages new `fellows.db` bytes and previews `group_members` orphaned by the swap → user confirms / cancels | `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_shows_dialog_and_can_cancel`, `tests/e2e/test_directory_data_update_flow.py::test_apply_with_group_impact_confirm_completes_swap` | conformant |
-| Private-data **restore** (`importRelationshipsBytes`) | mutation:wholesale-replace | file / auto-backup picker stages bytes → user confirms a row-count delta | **UM-1 + UM-2 hold:** off-folder the restore is refused at the worker (`tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`); the picker stages, the worker applies. **UM-3 gap:** in folder mode the dispose surface shows only a row-count delta — weaker "what is changing" legibility than AC-10's per-member orphan preview. | partial-conformance (UM-1 + UM-2 hold; UM-3 legibility weaker than AC-10 — frontier [#259](https://github.com/richbodo/fellows_local_db/issues/259)) |
+| Private-data **restore** (`importRelationshipsBytes`) | mutation:wholesale-replace | file / auto-backup picker stages bytes → user confirms a row-count delta | **UM-1 + UM-2 hold:** off-folder the restore is refused at the worker (`tests/e2e/test_private_data_enforcement.py::test_browse_only_refuses_import_relationships_bytes`); the picker stages, the worker applies. **UM-3 gap:** in folder mode the dispose surface shows only a row-count delta — weaker "what is changing" legibility than AC-10's per-member orphan preview. | partial-conformance (UM-1 + UM-2 hold; UM-3 legibility weaker than AC-10 — frontier [#259](https://github.com/social-network-health/fellows_local_db/issues/259)) |
 
 **Frontiers (kept honest, not closed).**
 
-- **Restore legibility ([#259](https://github.com/richbodo/fellows_local_db/issues/259), Open).**
+- **Restore legibility ([#259](https://github.com/social-network-health/fellows_local_db/issues/259), Open).**
   Private-data restore is a wholesale replace; its folder-mode dispose surface
   gives less per-item legibility than a directory re-import. The closure
   decision (the off-folder durability model plus a Restore-affordance tidy —
@@ -241,7 +241,7 @@ Read-only fellow data (served from `app/fellows.db`):
 | GET | `/images/<slug>.{jpg,png}` | Profile image; alphanumeric-fuzzy filename fallback. |
 | GET | `/` and other static paths | App shell from `app/static/`. |
 
-Production-only routes (added by `deploy/server.py`; conform to the Distribution slot's auth contract [`distribution-auth.openapi.yaml`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/distribution-auth.openapi.yaml)):
+Production-only routes (added by `deploy/server.py`; conform to the Distribution slot's auth contract [`distribution-auth.openapi.yaml`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/distribution-auth.openapi.yaml)):
 
 | Method | Path | Purpose |
 |---|---|---|
@@ -249,7 +249,7 @@ Production-only routes (added by `deploy/server.py`; conform to the Distribution
 | POST | `/api/send-unlock` | Anti-enum, always 200; rate-limited per email-hash. |
 | POST | `/api/verify-token` | 200 + Set-Cookie on success; 401 with distinct `expired`/`invalid` strings otherwise. |
 | POST | `/api/logout` | Idempotent, always 200. |
-| POST | `/api/client-errors` | Unauthenticated client-error sink. Always 204. Sanitized + rate-limited; logs `event=client_error` to journald. Dev stub mirrors prod for round-trip. Schema: [`client-errors-payload.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/client-errors-payload.schema.json); privacy boundary detailed in [`./email_gate.md` § Client error reporting](./email_gate.md#client-error-reporting). |
+| POST | `/api/client-errors` | Unauthenticated client-error sink. Always 204. Sanitized + rate-limited; logs `event=client_error` to journald. Dev stub mirrors prod for round-trip. Schema: [`client-errors-payload.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/client-errors-payload.schema.json); privacy boundary detailed in [`./email_gate.md` § Client error reporting](./email_gate.md#client-error-reporting). |
 | GET | `/healthz` | Liveness probe. |
 | GET | `/build-meta.json` | Build label + git SHA + `fellows_db_sha` for SW drift-check. |
 | GET | `/api/debug/diagnostics` | Operator diagnostics blob. |
@@ -277,7 +277,7 @@ HSTS is added by Caddy (`ansible/roles/caddy/templates/Caddyfile.j2`), not the P
 
 ## Shared DB schema (`fellows.db`)
 
-Specializes the [Shared schema](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/shared-db.schema.sql) — record_id / slug / name / extra_json plus app-defined display columns. fellows renames the spec's `records` table to `fellows` (spec-allowed; see the contract's naming note).
+Specializes the [Shared schema](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/shared-db.schema.sql) — record_id / slug / name / extra_json plus app-defined display columns. fellows renames the spec's `records` table to `fellows` (spec-allowed; see the contract's naming note).
 
 ```sql
 CREATE TABLE fellows (
@@ -335,7 +335,7 @@ Hops are attested claims by the writing application, not proofs; rows carry no p
 
 The 17 explicit columns are the fellows-specific app-defined display columns. Source-specific fields not in this list are serialized into `extra_json`, which `row_to_fellow()` in `app/fellows_queries.py` merges back into the API response. FTS5 also creates internal shadow tables (`fellows_fts_data`, `fellows_fts_idx`, etc.); those are SQLite-managed and not altered by hand.
 
-**Per-record asset URL convention:** `/images/<slug>.{jpg,png}` — alphanumeric-only fuzzy fallback in the server handler covers slug-vs-filename drift. Asset URLs are slug-keyed, immutable, and cacheable; they're separate from the database. See SH-3 in the [Shared schema contract](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/shared-db.schema.sql).
+**Per-record asset URL convention:** `/images/<slug>.{jpg,png}` — alphanumeric-only fuzzy fallback in the server handler covers slug-vs-filename drift. Asset URLs are slug-keyed, immutable, and cacheable; they're separate from the database. See SH-3 in the [Shared schema contract](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/shared-db.schema.sql).
 
 **Build pipeline:** `build/restore_from_knack_scrapefile.py` reads the Knack API detail dump (with a fallback read of the list-view `raw_dump` for a few fields), deduplicates slugs, detects grey-diamond placeholder avatars by MD5, and writes all three tables (`fellows`, `fellows_fts`, `provenance`). See [`./data_provenance.md`](./data_provenance.md) for the full data pipeline.
 
@@ -343,7 +343,7 @@ The 17 explicit columns are the fellows-specific app-defined display columns. So
 
 ## Private DB schema (`relationships.db`)
 
-Specializes the [Private schema](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/private-db.schema.sql). Created on first access by `app.relationships.open_db()`; the same DDL is mirrored in the PWA via `RELATIONSHIPS_SCHEMA_SQL` in `app/static/app.js` so the OPFS-backed sqlite3.wasm path matches the dev server.
+Specializes the [Private schema](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/private-db.schema.sql). Created on first access by `app.relationships.open_db()`; the same DDL is mirrored in the PWA via `RELATIONSHIPS_SCHEMA_SQL` in `app/static/app.js` so the OPFS-backed sqlite3.wasm path matches the dev server.
 
 ```sql
 CREATE TABLE groups (
@@ -400,13 +400,13 @@ CREATE TABLE settings (
 
 ## Worker constants (fellows's version-handshake values)
 
-The spec's [AC-4 versioned cross-boundary handshake](https://github.com/richbodo/personal_network_toolkit/blob/main/PNA_Spec.md#universal-architectural-commitments) is parameterized; fellows pins:
+The spec's [AC-4 versioned cross-boundary handshake](https://github.com/social-network-health/personal_network_toolkit/blob/main/PNA_Spec.md#universal-architectural-commitments) is parameterized; fellows pins:
 
 - `WORKER_RPC_VERSION = 2` (bumped only when the request/response shape of any RPC changes; gates mutating ops on mismatch)
 - `RELATIONSHIPS_SCHEMA_VERSION = 1` (mirrors `PRAGMA user_version`; bumped only on schema migrations)
 - Worker file path: `app/static/vendor/sqlite-worker.js`
 
-The page reads both during the worker `init` handshake (the handshake shape itself is specified in [`worker-init-handshake.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/worker-init-handshake.schema.json) and the RPC envelope in [`worker-rpc-protocol.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/worker-rpc-protocol.schema.json)) and refuses mutating RPCs on mismatch. Reads still work, so the user can browse cached data while the SW's "New version available — Reload" banner does its job. Build label is **not** consulted for this gate.
+The page reads both during the worker `init` handshake (the handshake shape itself is specified in [`worker-init-handshake.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/worker-init-handshake.schema.json) and the RPC envelope in [`worker-rpc-protocol.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/worker-rpc-protocol.schema.json)) and refuses mutating RPCs on mismatch. Reads still work, so the user can browse cached data while the SW's "New version available — Reload" banner does its job. Build label is **not** consulted for this gate.
 
 ---
 
@@ -469,7 +469,7 @@ Specializes the Debug contract. fellows pins:
 
 ## Distribution flavor specifics (magic-link PWA)
 
-Specializes the Distribution slot. Auth-endpoint shapes are in [`distribution-auth.openapi.yaml`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/distribution-auth.openapi.yaml); the behavioral decision tree and the operator runbook live in the annexes.
+Specializes the Distribution slot. Auth-endpoint shapes are in [`distribution-auth.openapi.yaml`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/distribution-auth.openapi.yaml); the behavioral decision tree and the operator runbook live in the annexes.
 
 Fellows pins:
 
@@ -491,13 +491,13 @@ Fellows pins:
 
 ## MCP servers
 
-Fellows attests `mcp-exposure:shared+private+comms`. Three stdio MCP servers ship today, all read-only or stage-only (no writes, no transports fired from inside the MCP process); their typed tool surfaces live in `https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/`.
+Fellows attests `mcp-exposure:shared+private+comms`. Three stdio MCP servers ship today, all read-only or stage-only (no writes, no transports fired from inside the MCP process); their typed tool surfaces live in `https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/`.
 
 | Server | Source | Contract | Tools |
 |---|---|---|---|
-| Shared Data Ops | `mcp_servers/shared_data_ops.py` | [`mcp-shared-data-ops.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/mcp-shared-data-ops.schema.json) | `search_fellows`, `get_fellow`, `list_fellows`, `get_directory_stats` |
-| Private Data Ops | `mcp_servers/private_data_ops.py` | [`mcp-private-data-ops.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/mcp-private-data-ops.schema.json) | `list_groups`, `find_group`, `get_group_members` |
-| Communications | `mcp_servers/comms.py` | [`mcp-comms.schema.json`](https://github.com/richbodo/personal_network_toolkit/blob/main/spec/contracts/mcp-comms.schema.json) | `stage_email`, `get_staged` |
+| Shared Data Ops | `mcp_servers/shared_data_ops.py` | [`mcp-shared-data-ops.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/mcp-shared-data-ops.schema.json) | `search_fellows`, `get_fellow`, `list_fellows`, `get_directory_stats` |
+| Private Data Ops | `mcp_servers/private_data_ops.py` | [`mcp-private-data-ops.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/mcp-private-data-ops.schema.json) | `list_groups`, `find_group`, `get_group_members` |
+| Communications | `mcp_servers/comms.py` | [`mcp-comms.schema.json`](https://github.com/social-network-health/personal_network_toolkit/blob/main/spec/contracts/mcp-comms.schema.json) | `stage_email`, `get_staged` |
 
 Per AC-MCP-B, `stage_email` returns a `mailto:` URL with a staging ID; the user's mail client launches the transport when the user clicks. The server never invokes a transport. Per AC-MCP-A, the Private Data Ops server returns Private DB rows and so requires per-call consent when wired to a cloud AI client; see [`../mcp_servers/README.md`](../mcp_servers/README.md) § Cloud LLM caveat.
 

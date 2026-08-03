@@ -6,7 +6,7 @@ app shows you at every decision point. A plain-language companion to the
 [User Guide](../users_manual.md), the [Claude Desktop setup guide](../use_with_claude_desktop.md)
 (the how-to), and [`Architecture.md`](../Architecture.md) (the formal commitments this document
 explains). The sibling reference design has the same style of walkthrough —
-[PRM's AI reads & writes](https://github.com/richbodo/prm/blob/main/docs/explainers/ai-reads-and-writes-walkthrough.md)
+[PRM's AI reads & writes](https://github.com/social-network-health/prm/blob/main/docs/explainers/ai-reads-and-writes-walkthrough.md)
 — and comparing the two is a good way to see the shared design language.*
 
 > Every screenshot below is the real app, driven through each state against a **synthetic demo
@@ -127,7 +127,7 @@ and accept these risks*, and Continue lights up.
 
 Accepting is recorded **once per install**, and it does something more interesting than just
 starting three downloads: it raises the **`EX-CLOUD-LLM` exception** — a *named* departure from
-the app's own rules, defined in the [PNA Toolkit](https://github.com/richbodo/personal_network_toolkit)
+the app's own rules, defined in the [PNA Toolkit](https://github.com/social-network-health/personal_network_toolkit)
 spec this app conforms to. Named is the point: instead of quietly becoming a different kind of
 app, it declares which promise it is suspending, shows you that state for as long as it lasts, and
 gives you a one-click way back.
@@ -208,7 +208,7 @@ in [`Architecture.md` § User-mediation](../Architecture.md#user-mediation-attes
 
 If you're curious what disciplined AI *writes* look like when an app does choose to allow them —
 staged proposals, append-only fields, per-field policies — that's PRM's territory:
-[AI reads & writes in PRM](https://github.com/richbodo/prm/blob/main/docs/explainers/ai-reads-and-writes-walkthrough.md#part-2--ai-writes-what-an-ai-can-change).
+[AI reads & writes in PRM](https://github.com/social-network-health/prm/blob/main/docs/explainers/ai-reads-and-writes-walkthrough.md#part-2--ai-writes-what-an-ai-can-change).
 If this app ever grows an in-app AI, the commitment is already pinned: it will be a *proposer*
 subject to the same review gates, never an actuator.
 
@@ -257,7 +257,7 @@ handler clauses EX-H1–H8), the
 mediated-boundary registry), the
 [Constraint attestation](../Architecture.md#constraint-attestation) (the sandbox/folder story),
 the MCP tool contracts in the
-[PNA Toolkit spec](https://github.com/richbodo/personal_network_toolkit/tree/main/spec/contracts),
+[PNA Toolkit spec](https://github.com/social-network-health/personal_network_toolkit/tree/main/spec/contracts),
 and the e2e suites that pin the flows in this document:
 `tests/e2e/test_pna_exception_mode.py`, `tests/e2e/test_mcpb_settings.py`,
 `tests/e2e/test_sandbox_sealed_mcp.py`, and `tests/test_private_data_ops.py` /

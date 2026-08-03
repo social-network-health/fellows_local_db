@@ -1,6 +1,6 @@
 # Plan — #248: gate workspace-identity minting so off-folder settings are literally empty
 
-**Status:** OPEN. **Tracks:** [#248](https://github.com/richbodo/fellows_local_db/issues/248).
+**Status:** OPEN. **Tracks:** [#248](https://github.com/social-network-health/fellows_local_db/issues/248).
 **Invariant (the tripwire):** `tests/e2e/test_private_data_enforcement.py::test_off_folder_settings_are_empty`
 — a `@pytest.mark.xfail(strict=True)` that flips to XPASS the day this lands.
 

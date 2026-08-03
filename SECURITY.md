@@ -4,7 +4,7 @@
 
 The maintainer is reachable at **richbodo@gmail.com** with a subject line beginning `Fellows directory security:`. If a PGP-encrypted exchange is needed for the disclosure, ask via that mailbox and a key will be exchanged before sensitive detail is sent.
 
-For ordinary bugs that aren't security-sensitive, use GitHub Issues at <https://github.com/richbodo/fellows_local_db/issues>.
+For ordinary bugs that aren't security-sensitive, use GitHub Issues at <https://github.com/social-network-health/fellows_local_db/issues>.
 
 ## Supported versions
 

@@ -6,7 +6,7 @@
 > from this; the per-contribution detail lives in the linked plan files.
 >
 > **Working model:** fellows is the *demonstrating design* + *staging ground*; a separate agent
-> executes the actual edits in the [`personal_network_toolkit`](https://github.com/richbodo/personal_network_toolkit)
+> executes the actual edits in the [`personal_network_toolkit`](https://github.com/social-network-health/personal_network_toolkit)
 > (PNT) repo. Nothing here files into PNT without the maintainer's explicit go-ahead.
 >
 > Local paths: PNT repo `~/src/personal_network_toolkit`; this repo `~/src/fellows_local_db`.

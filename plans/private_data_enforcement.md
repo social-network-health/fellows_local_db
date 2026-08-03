@@ -4,7 +4,7 @@
 data off-folder). ⚠️ **One residual still OPEN:** the worker still mints benign
 workspace-identity metadata into OPFS off-folder, so off-folder settings aren't
 *literally* empty — tracked separately as
-[#248](https://github.com/richbodo/fellows_local_db/issues/248) /
+[#248](https://github.com/social-network-health/fellows_local_db/issues/248) /
 [`issue_248_identity_off_folder.md`](issue_248_identity_off_folder.md), pinned by
 the strict-xfail `tests/e2e/test_private_data_enforcement.py::test_off_folder_settings_are_empty`.
 This plan's tests deliberately scoped that out (they subtract `_IDENTITY_KEYS`);

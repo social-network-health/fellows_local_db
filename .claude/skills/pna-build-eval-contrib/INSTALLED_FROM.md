@@ -1,7 +1,7 @@
 # Provenance
 
 `SKILL.md` here is a **vendored copy** of the `pna-build-eval-contrib` skill from the
-Personal Network Toolkit (https://github.com/richbodo/personal_network_toolkit),
+Personal Network Toolkit (https://github.com/social-network-health/personal_network_toolkit),
 copied at PNT commit `419702a`.
 
 This repo (`fellows_local_db`) is PNT's first reference design and actively contributes
