@@ -38,7 +38,6 @@ After install, the app must keep working without further server contact. Concret
 - [Production / DevOps](#production--devops)
   - [Shipping a change (the standard rubric)](#shipping-a-change-the-standard-rubric)
 - [Local Dev Notes](#local-dev-notes)
-- [Before Making This Repo Public](#before-making-this-repo-public)
 - [Project Layout](#project-layout)
 
 ## Data Note
