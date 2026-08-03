@@ -4,6 +4,8 @@ This document is fellows_local_db's **specialization-and-conformance layer**: it
 
 Universal PNA architecture — vocabulary, goals, the two-store ownership split, the worker-owned-OPFS rule, the version-handshake contract, the universal ACs — lives in the [PNA Spec](https://github.com/richbodo/personal_network_toolkit/blob/main/PNA_Spec.md) at the [personal_network_toolkit](https://github.com/richbodo/personal_network_toolkit) repo. This file does not restate it.
 
+**The constraint every choice below answers to:** this app is Never-SaaS. The PWA and magic-link delivery are a *distribution and update channel*, not a service — production hands a fellow the bundle and the contact DB and then gets out of the way, and the app must keep working with no further server contact. See [Design Stance: Local-Only, Not SaaS](../README.md#design-stance-local-only-not-saas) in the README for what that rules out.
+
 ---
 
 ## Spec conformance
