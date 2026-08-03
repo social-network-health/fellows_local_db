@@ -1,5 +1,12 @@
 # EPIC — Private-Data Capability Gate + Mobile Rebuild (the controller)
 
+> **Completed 2026-06-07 — kept as the execution record.** The durable methodology this
+> plan established (lanes over PRs, `app.js` has one owner, freeze interfaces before
+> fan-out, the honest ceiling, integration order) has been extracted to
+> [`docs/worktrees.md`](../docs/worktrees.md) § How to split the work, which is the live
+> reference. Read this file for the history of *this* effort; read the doc for how to run
+> the next one.
+
 **Status:** ✅ COMPLETE (2026-06-07). **Created:** 2026-06-02. All in-app work landed: gate #235, unlock/probe/chooser #237, follow-ups #239, migration #240, mobile browse-only rebuild #241, and the **private-data enforcement** detour #244 (`d2706a9`). #244 left one narrow residual — the worker still minted off-folder workspace-identity metadata into OPFS, so off-folder settings weren't *literally* empty — tracked as #248 and **closed by PR #251** (`930bd44`): identity is now minted only on the first canonical folder write, the off-folder OPFS settings store is literally empty, and the last strict-xfail is promoted to a hard guard with byte-level on-disk evidence (`tests/e2e/test_private_data_enforcement.py`). The final tail — **C4, the upstream PNT constraints contribution** (Phase 4) — **merged as [PNT PR #18](https://github.com/social-network-health/personal_network_toolkit/pull/18) (2026-06-03)**. Both completion gates are merged; this EPIC is complete. (One intentional post-epic refinement remains tracked below: the desktop "Enable on Chrome desktop →" CTA, deferred — PR3 *hides* desktop entry points, which is functionally correct.)
 **This file does not restate the child plans — it sequences them, declares the dependency graph and file-ownership lanes, defines integration checkpoints, and tracks status.** Read the children for the *what*; read this for the *order* and the *how-to-parallelize*.
 
