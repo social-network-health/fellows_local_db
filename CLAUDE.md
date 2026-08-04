@@ -2,16 +2,25 @@
 
 Read README.md for project setup, API docs, and test commands. Read docs/Architecture.md for fellows_local_db's specialization and PNA-spec conformance (axis picks, fellows-specific schema, HTTP routes, debug placeholders); docs/Architecture.md cross-links into the [personal_network_toolkit](https://github.com/social-network-health/personal_network_toolkit) repo for the universal PNA architecture.
 
-<!-- BEGIN SHARED: org-conventions v4 -->
+<!-- BEGIN SHARED: org-conventions v5 -->
 <!-- Canonical copy: social-network-health/docs/shared/org-conventions.md
      Do not edit this block in place. Edit the canonical copy and propagate. -->
 
+> **⚙ Shared, generated section — don't edit it here.** Everything from this line down to
+> *"Changing this block"* is identical in every repo in the org. Change it in the canonical
+> copy (hub `docs/shared/org-conventions.md`) and run `just sync-conventions`; an edit made
+> in place will be reported as `EDITED` and then overwritten. Repo-specific guidance belongs
+> in this file's *other* sections, which the tooling never touches.
+
 ## The organization
 
-Eight repos under the **[social-network-health](https://github.com/social-network-health)**
-GitHub org. A developer normally has them **all checked out side by side in one parent
-directory**, so from any repo root every other repo is at `../<name>`. Write cross-repo paths
-relative to the repo root, never absolute — the parent directory differs per host.
+The repos of the **[social-network-health](https://github.com/social-network-health)** GitHub
+org. A developer normally has them **all checked out side by side in one parent directory**,
+so from any repo root every other repo is at `../<name>`. Write cross-repo paths relative to
+the repo root, never absolute — the parent directory differs per host.
+
+The set changes as repos are added and archived, so no document states a count; ask the org
+(`gh repo list social-network-health`) or read `RELATED_REPOS.md`.
 
 **[`RELATED_REPOS.md`](https://github.com/social-network-health/social-network-health/blob/main/RELATED_REPOS.md)**
 in the hub repo is the single source of truth for what those repos are and what each is for.
@@ -67,7 +76,7 @@ Each of these was learned the hard way in one repo. They apply in all of them.
   worktree setup and port serialization live in that repo's own sections.
 - **A sync rule without a mechanical check is a wish.** Anything that must hold in more than
   one repo ships with a command that verifies it, and the rule names the command. Nobody
-  eyeballs eight repos, so silent drift is the default outcome otherwise.
+  eyeballs every repo by hand, so silent drift is the default outcome otherwise.
 - **Add a load-bearing document or module → update `.claude/commands/prime.md` in the same
   PR.** Priming is how every agent gets its systems-level picture of a repo, and a prime that
   misses the file where the invariants live sends every future session searching for it. This
@@ -86,7 +95,7 @@ markers, run `just sync-conventions` from the hub repo, then open one PR per rep
 `just check-conventions` verifies every copy matches; `just check-org` runs every org check.
 Full procedure: hub `docs/org-upkeep.md`.
 
-<!-- END SHARED: org-conventions v4 -->
+<!-- END SHARED: org-conventions v5 -->
 
 ## Upstream and the other reference design
 
