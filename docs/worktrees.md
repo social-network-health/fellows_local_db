@@ -36,7 +36,7 @@ Playwright browsers live in a per-user global cache, so they're shared for free.
 ## The one rule that matters: port 8765 is host-global
 
 Worktrees isolate the **filesystem, not the network.** The app's port (`8765`,
-fixed — see CLAUDE.md) is shared across every worktree on the host. So:
+fixed — see AGENTS.md) is shared across every worktree on the host. So:
 
 | Activity | Across worktrees |
 |---|---|
@@ -105,7 +105,7 @@ The lane set that worked here:
 | TESTS | `tests/e2e/*` | yes; baselines deferred to integration |
 
 **`app/static/app.js` has exactly one owner and is never split across concurrent agents.**
-CLAUDE.md says it's a single IIFE with no modules or classes; the consequence is that its
+AGENTS.md says it's a single IIFE with no modules or classes; the consequence is that its
 12,000+ lines cannot be meaningfully divided. It is the critical path, and everything else
 parallelizes *around* it.
 

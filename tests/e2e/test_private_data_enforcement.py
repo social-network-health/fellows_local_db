@@ -107,7 +107,7 @@ def test_browse_only_refuses_import_relationships_bytes(standalone_page, base_ur
     Unlike createGroup/setSetting it carries no page-side refuseIfBrowseOnly and
     the worker handler has no folder guard — so a console/restore call could land
     a durable private store in the OPFS slot in browse-only mode, bypassing the
-    gate (CLAUDE.md: "a gated capability whose RPC still succeeds from the
+    gate (AGENTS.md: "a gated capability whose RPC still succeeds from the
     DevTools console is not reduced"). Export is a read (fine); the import must be
     refused."""
     page = standalone_page
@@ -128,7 +128,7 @@ def test_worker_is_load_bearing_off_folder_via_raw_rpc(standalone_page, base_url
     refuseIfBrowseOnly, and asserts every mutating relationships.db op is refused
     at the OPFS owner with a BrowseOnlyError. This is the load-bearing half: a
     DevTools-console call can't write durable private data in browse-only mode
-    (CLAUDE.md — capability reductions enforce at the data layer, never UI-only)."""
+    (AGENTS.md — capability reductions enforce at the data layer, never UI-only)."""
     page = standalone_page
     _boot_browse_only(page, base_url_fixture)
     ops = [

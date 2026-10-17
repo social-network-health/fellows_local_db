@@ -5,7 +5,7 @@ implementation choice in a way that's worth remembering. Most
 implementation choices live fine inside the code itself or a PR
 description; this file is for the smaller set where:
 
-- An architectural commitment (a PNA-spec AC, a `CLAUDE.md` rule, or
+- An architectural commitment (a PNA-spec AC, a `AGENTS.md` rule, or
   a section of `docs/Architecture.md`) was the deciding factor,
 - The constraint isn't visible at the point where the choice shows
   up in code, so a future contributor seeing only the artifact would

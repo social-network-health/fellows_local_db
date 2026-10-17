@@ -1,6 +1,11 @@
+---
+name: prime
+description: Orient a new session in fellows_local_db — read its reading list for a systems-level picture, then summarize. Read-only. Use when the user asks to prime or orient.
+---
+
 # Prime — fellows_local_db
 > Read-only orientation: understand the system, then summarize. Do NOT switch branches,
-> pull, or create a worktree while priming — just orient. (CLAUDE.md § Workflow owns
+> pull, or create a worktree while priming — just orient. (AGENTS.md § Workflow owns
 > branching; `docs/worktrees.md` owns parallel work.)
 
 ## Run
@@ -34,4 +39,4 @@ all of `plans/` (46 files). `docs/users_manual.md` is worth reading **only** for
 ## Before summarizing
 - Note your branch. If a sibling worktree looks like it's on a related feature, flag the overlap.
 - Say which of the two DBs and which of the three code surfaces the task will touch.
-- Don't restate worktree or branching policy — CLAUDE.md and `docs/worktrees.md` own it.
+- Don't restate worktree or branching policy — AGENTS.md and `docs/worktrees.md` own it.

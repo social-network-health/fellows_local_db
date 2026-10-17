@@ -22,7 +22,7 @@
 # via the `wt`/worktrunk flow; this script is the plain-git equivalent and also
 # carries app/fellows.db + mcp_servers/.venv.)
 #
-# CONCURRENCY WARNING: the test suite binds the FIXED port 8765 (CLAUDE.md).
+# CONCURRENCY WARNING: the test suite binds the FIXED port 8765 (AGENTS.md).
 # Server-based test runs (just test-api / test-e2e / test-mobile) in two
 # worktrees AT THE SAME TIME will collide on that port. Serialize server-based
 # runs across worktrees; pure-DB tests (tests/test_database.py) are parallel-safe.
