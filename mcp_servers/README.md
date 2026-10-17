@@ -235,7 +235,7 @@ routing.
 
 `mcp_servers/` is the only Python code in this repo allowed
 non-stdlib runtime dependencies. The main app (`app/server.py`,
-`deploy/server.py`) is strictly stdlib-only per `CLAUDE.md`. Keeping
+`deploy/server.py`) is strictly stdlib-only per `AGENTS.md`. Keeping
 the MCP server deps in `mcp_servers/.venv` preserves that boundary —
 and one venv covers all three servers.
 

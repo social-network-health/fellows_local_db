@@ -47,4 +47,4 @@ Fellows attests `mcp-exposure:shared+private+comms` — three stdio MCP servers 
 
 ## For AI agents working in this repo
 
-- [CLAUDE.md](CLAUDE.md) — load-bearing constraints (stdlib-only, no frontend build tools, port 8765, escapeHtml discipline, two-DB architecture, OPFS-via-worker rule).
+- [AGENTS.md](AGENTS.md) — load-bearing constraints (stdlib-only, no frontend build tools, port 8765, escapeHtml discipline, two-DB architecture, OPFS-via-worker rule).

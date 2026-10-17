@@ -9,7 +9,7 @@ Fails loudly (the calling hook exits 2) when a session's changes either:
      without touching any test, or
   B. add a deferral comment to a frontier file without also adding a strict-xfail.
 
-See plans/conformance_discipline.md + CLAUDE.md § Conformance discipline. The
+See plans/conformance_discipline.md + AGENTS.md § Conformance discipline. The
 decision lives in the pure `_decide()` (unit-tested in
 tests/test_conformance_guard.py); `check()` wires it to `git diff`. Everything
 fails OPEN — any error returns None so the guard can never wedge a session.
@@ -41,13 +41,13 @@ _ATTEST_MSG = (
     "touching tests/. A `conformant` row needs executable evidence; a softened "
     "row needs an honest status. Run `pytest tests/test_attestation_has_evidence.py` "
     "and add/adjust the negative test, or explain why no test change is needed. "
-    "(CLAUDE.md § Conformance discipline)"
+    "(AGENTS.md § Conformance discipline)"
 )
 _DEFERRAL_MSG = (
     "[conformance-guard] a deferral comment was added to a frontier file ({f}) "
     "without a strict-xfail. Deferrals live in the attestation or as a "
     "`@pytest.mark.xfail(strict=True)` test naming the plan PR — never a code "
-    "comment. (CLAUDE.md § Conformance discipline)"
+    "comment. (AGENTS.md § Conformance discipline)"
 )
 
 
